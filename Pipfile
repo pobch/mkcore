@@ -10,6 +10,7 @@ name = "pypi"
 django = "*"
 djangorestframework = "*"
 "psycopg2" = "==2.7.3"
+gunicorn = "*"
 
 
 [dev-packages]
