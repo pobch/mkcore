@@ -31,7 +31,7 @@
 ```
 
 ## Room API
-Go to `http://127.0.0.1:8000/api/` (Don't forget / at the end)
+Go to `http://127.0.0.1:8000/api/` (Don't forget `/` at the end)
 - Use `GET` to list all rows in the database.
 - Use `POST` to create a new row.
 
