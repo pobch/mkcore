@@ -3,7 +3,7 @@
 # Create your views here.
 from rest_framework import generics
 
-from . import models
+from commons import models
 from . import serializers
 
 
