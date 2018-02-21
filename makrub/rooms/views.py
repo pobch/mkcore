@@ -3,14 +3,14 @@
 # Create your views here.
 from rest_framework import generics
 
-from commons import models
-from . import serializers
+from commons.models import Room
+from .serializers import RoomSerializer
 
 
 class ListRooms(generics.ListCreateAPIView):
-    queryset = models.Room.objects.all()
-    serializer_class = serializers.RoomSerializer
+    queryset = Room.objects.all()
+    serializer_class = RoomSerializer
 
 class DetailRoom(generics.RetrieveUpdateDestroyAPIView):
-    queryset = models.Room.objects.all()
-    serializer_class = serializers.RoomSerializer
+    queryset = Room.objects.all()
+    serializer_class = RoomSerializer
