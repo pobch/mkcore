@@ -3,7 +3,8 @@ from commons.models import User, Room
 
 
 class RoomSerializer(serializers.ModelSerializer):
-    user_id = serializers.CharField(source='user_id.username')
+    user_id = serializers.StringRelatedField() # auto read_only=True, need to declare perform_crate in views.py
+    # user_id = serializers.PrimaryKeyRelatedField(queryset=User.objects.all())
 
     class Meta:
         # fields = (
@@ -15,3 +16,4 @@ class RoomSerializer(serializers.ModelSerializer):
         # )
         fields = '__all__'
         model = Room
+

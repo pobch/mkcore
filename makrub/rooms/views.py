@@ -11,6 +11,9 @@ class ListRooms(generics.ListCreateAPIView):
     queryset = Room.objects.all()
     serializer_class = RoomSerializer
 
+    def perform_create(self, serializer):
+        serializer.save(user_id=self.request.user)
+
 class DetailRoom(generics.RetrieveUpdateDestroyAPIView):
     queryset = Room.objects.all()
     serializer_class = RoomSerializer
