@@ -1,8 +1,7 @@
 from django.db import models
 from django.contrib.postgres.fields import JSONField
-from django.contrib.auth import get_user_model
+from django.contrib.auth.models import User
 
-User = get_user_model()
 
 class Room(models.Model):
     name = models.CharField(max_length=200,verbose_name='this is your room\'s name')
@@ -11,7 +10,7 @@ class Room(models.Model):
     roomOwner = models.ForeignKey(User, related_name='ownRooms', on_delete=models.CASCADE)
     roomLogin = models.CharField(max_length=200, unique=True, blank=False, null=False)
     roomPassword = models.CharField(max_length=100, blank=False, null=False)
-    guests = models.ManyToManyField(User, related_name='guestRooms', blank=True)
+    guests = models.ManyToManyField(User, related_name='guestInRooms', blank=True)
     survey = JSONField(null=True)
 
     def __str__(self):

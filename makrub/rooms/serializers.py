@@ -10,6 +10,7 @@ class RoomSerializer(serializers.ModelSerializer):
                                                         allow_null=True, required=False)
     # roomOwner = serializers.StringRelatedField() # auto read_only=True, need to declare perform_crate in views.py
     # roomOwner = serializers.PrimaryKeyRelatedField(queryset=User.objects.all())
+    guests = serializers.PrimaryKeyRelatedField(many=True, queryset=User.objects.all())
 
     class Meta:
         # fields = ()
