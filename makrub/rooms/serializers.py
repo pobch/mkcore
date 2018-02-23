@@ -1,9 +1,14 @@
 from rest_framework import serializers
 from commons.models import User, Room
+from accounts.serializers import AccountSerializer
 
 
 class RoomSerializer(serializers.ModelSerializer):
-    roomOwner = serializers.StringRelatedField() # auto read_only=True, need to declare perform_crate in views.py
+    roomOwner = AccountSerializer(read_only=True)
+    roomOwner_id = serializers.PrimaryKeyRelatedField(queryset=User.objects.all(),
+                                                        write_only=True, source='roomOwner',
+                                                        allow_null=True, required=False)
+    # roomOwner = serializers.StringRelatedField() # auto read_only=True, need to declare perform_crate in views.py
     # roomOwner = serializers.PrimaryKeyRelatedField(queryset=User.objects.all())
 
     class Meta:
