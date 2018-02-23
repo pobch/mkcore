@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from commons.models import User, Room
+from commons.models import User, Room, Answer
 from accounts.serializers import AccountSerializer
 
 
@@ -17,3 +17,10 @@ class RoomSerializer(serializers.ModelSerializer):
         fields = '__all__'
         model = Room
 
+class AnswerSerializer(serializers.ModelSerializer):
+    guestUser = serializers.PrimaryKeyRelatedField(queryset=User.objects.all())
+    guestUser_str = serializers.StringRelatedField(source='guestUser')
+
+    class Meta:
+        fields = '__all__'
+        model = Answer
