@@ -30,6 +30,9 @@
     make migrate
 ```
 
+## Admin page
+`http://127.0.0.1:8000/admin/`
+
 ## Room API
 Go to `http://127.0.0.1:8000/rooms/` (Don't forget `/` at the end)
 - Use `GET` to list all rows in the database.
@@ -38,14 +41,6 @@ Go to `http://127.0.0.1:8000/rooms/` (Don't forget `/` at the end)
 Go to `http://127.0.0.1:8000/rooms/<pk>/` to get/change/delete each row by pk (the 'id' column)
 - Use `GET`, `PUT`, `DELETE`
 
-## JSON format:
-```
-{
-    "id": <int,pk,auto-add>,
-    "name": <string,maxlength=200>,
-    "description": <text>,
-    "user_id": <int>,
-    "account_id": <int>,
-    "documents": <JSON>
-}
-```
+## Account API
+- `http://127.0.0.1:8000/accounts/`
+- `http://127.0.0.1:8000/accounts/<pk>/`

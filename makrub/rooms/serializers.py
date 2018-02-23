@@ -3,17 +3,11 @@ from commons.models import User, Room
 
 
 class RoomSerializer(serializers.ModelSerializer):
-    user_id = serializers.StringRelatedField() # auto read_only=True, need to declare perform_crate in views.py
-    # user_id = serializers.PrimaryKeyRelatedField(queryset=User.objects.all())
+    roomOwner = serializers.StringRelatedField() # auto read_only=True, need to declare perform_crate in views.py
+    # roomOwner = serializers.PrimaryKeyRelatedField(queryset=User.objects.all())
 
     class Meta:
-        # fields = (
-        #     'id',
-        #     'name',
-        #     'description',
-        #     'user_id',
-        #     'survey',
-        # )
+        # fields = ()
         fields = '__all__'
         model = Room
 
