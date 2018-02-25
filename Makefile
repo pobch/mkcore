@@ -2,6 +2,7 @@ dev:
 	gunicorn --chdir makrub makrub.wsgi:application --reload
 
 migrate:
+	./makrub/manage.py makemigrations
 	./makrub/manage.py migrate
 
 start:
