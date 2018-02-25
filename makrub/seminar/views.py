@@ -3,7 +3,7 @@
 # Create your views here.
 from rest_framework import generics
 
-from commons.models import Room, Answer
+from .models import Room, Answer
 from .serializers import RoomSerializer, AnswerSerializer
 
 

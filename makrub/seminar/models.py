@@ -7,10 +7,10 @@ class Room(models.Model):
     name = models.CharField(max_length=200,verbose_name='this is your room\'s name')
     description = models.TextField()
     # one owner per room
-    roomOwner = models.ForeignKey(User, related_name='ownRooms', on_delete=models.CASCADE)
-    roomLogin = models.CharField(max_length=200, unique=True, blank=False, null=False)
-    roomPassword = models.CharField(max_length=100, blank=False, null=False)
-    guests = models.ManyToManyField(User, related_name='guestInRooms')
+    room_owner = models.ForeignKey(User, related_name='own_rooms', on_delete=models.CASCADE)
+    room_login = models.CharField(max_length=200, unique=True, blank=False, null=False)
+    room_password = models.CharField(max_length=100, blank=False, null=False)
+    guests = models.ManyToManyField(User, related_name='guest_in_rooms')
     survey = JSONField(null=True)
 
     def __str__(self):
@@ -19,7 +19,7 @@ class Room(models.Model):
 
 class Answer(models.Model):
     # room = models.ForeignKey()
-    guestUser = models.ForeignKey(User, related_name='answers', on_delete=models.CASCADE)
+    guest_user = models.ForeignKey(User, related_name='answers', on_delete=models.CASCADE)
     answer = JSONField(null=True)
 
     def __str__(self):

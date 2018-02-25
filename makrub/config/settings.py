@@ -40,8 +40,7 @@ INSTALLED_APPS = [
 
     'rest_framework',
 
-    'rooms',
-    'commons',
+    'seminar',
     'accounts',
 ]
 
@@ -55,7 +54,7 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
-ROOT_URLCONF = 'makrub.urls'
+ROOT_URLCONF = 'config.urls'
 
 TEMPLATES = [
     {
@@ -73,7 +72,7 @@ TEMPLATES = [
     },
 ]
 
-WSGI_APPLICATION = 'makrub.wsgi.application'
+WSGI_APPLICATION = 'config.wsgi.application'
 
 
 # Database
