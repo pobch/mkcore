@@ -20,4 +20,6 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('api/', include('seminar.urls')),
     path('blueprints/accounts/', include('accounts.urls')),
+    path('djoser/', include('djoser.urls')),
+    path('djoser/', include('djoser.urls.jwt')),
 ]
