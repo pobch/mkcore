@@ -21,11 +21,3 @@ class SignupSerializer(serializers.ModelSerializer):
     def create(self, validated_data):
         account = Account.objects.create_user(**validated_data)
         return account
-
-
-class LoginSerializer(serializers.Serializer):
-    email = serializers.EmailField()
-    password = serializers.CharField(max_length=200)
-
-    class Meta:
-        fields = ('email', 'password')
