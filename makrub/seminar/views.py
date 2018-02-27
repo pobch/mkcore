@@ -12,7 +12,7 @@ class ListRooms(generics.ListCreateAPIView):
     serializer_class = RoomSerializer
 
     def perform_create(self, serializer):
-        serializer.save(roomOwner=self.request.user)
+        serializer.save(room_owner=self.request.user)
 
 class DetailRoom(generics.RetrieveUpdateDestroyAPIView):
     queryset = Room.objects.all()

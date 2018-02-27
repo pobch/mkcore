@@ -2,6 +2,7 @@
 
 from django.db import models
 from django.contrib.auth.base_user import AbstractBaseUser, BaseUserManager
+import uuid
 
 
 class AccountManager(BaseUserManager):
@@ -28,6 +29,7 @@ class Account(AbstractBaseUser):
     email = models.EmailField(verbose_name='E-mail address', max_length=255, unique=True)
     is_active = models.BooleanField(default=True)
     is_admin = models.BooleanField(default=False)
+    jwt_secret = models.UUIDField(default=uuid.uuid4)
 
     objects = AccountManager()
 
@@ -52,3 +54,6 @@ class Account(AbstractBaseUser):
         # Simplest possible answer: All admins are staff
         return self.is_admin
 
+
+def jwt_get_secret_key(user_model):
+    return user_model.jwt_secret
