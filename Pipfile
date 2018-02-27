@@ -13,6 +13,7 @@ djangorestframework = "*"
 gunicorn = "*"
 djoser = "*"
 djangorestframework-jwt = "*"
+django-otp = "*"
 
 
 [dev-packages]

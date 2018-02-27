@@ -1,7 +1,7 @@
 {
     "_meta": {
         "hash": {
-            "sha256": "73055908a98907b428009a0aafca1f4c1b36d246190b7f47321c006ed26cd256"
+            "sha256": "ec38cbef983221a79acc4b397f8cd190a287855472e649537e05fecbf447df74"
         },
         "host-environment-markers": {
             "implementation_name": "cpython",
@@ -33,6 +33,13 @@
                 "sha256:dc3b61d054f1bced64628c62025d480f655303aea9f408e5996c339a543b45f0"
             ],
             "version": "==2.0.2"
+        },
+        "django-otp": {
+            "hashes": [
+                "sha256:06047e6f20e1527363ced31e4e8ea090f531cb33f4acd1bcaa6358a2efc05dbe",
+                "sha256:b1b0166717e35363e8b8fba7d23e5a3e4f175b4893b2e1b68ac8bd3e1908c6a9"
+            ],
+            "version": "==0.4.2"
         },
         "django-templated-mail": {
             "hashes": [
