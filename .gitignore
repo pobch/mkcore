@@ -54,5 +54,8 @@ db.sqlite3
 # Note
 /Note*
 
-# opp
+# otp
 /otp/
+
+# Secret
+.env

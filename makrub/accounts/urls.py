@@ -7,7 +7,8 @@ from rest_framework_jwt import views as jwt_views
 urlpatterns = [
     path('', views.ListAccounts.as_view()),
     path('<int:pk>/', views.DetailAccount.as_view()),
-    path('signup/', views.Signup.as_view()),
+    path('signup', views.Signup.as_view(), name='sign-up'),
+    path('confirmation/', views.confirmation, name='confirmation'),
 
     path('login/', jwt_views.ObtainJSONWebToken.as_view(), name='user-login'),
     path('login/refresh/', jwt_views.RefreshJSONWebToken.as_view(), name='user-login-refresh'),
