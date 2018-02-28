@@ -6,8 +6,8 @@ from rest_framework_jwt import views as jwt_views
 
 
 urlpatterns = [
-    path('', views.ListAccounts.as_view()),
-    path('<int:pk>/', views.DetailAccount.as_view()),
+    path('', views.ListUsers.as_view()),
+    path('<int:pk>/', views.DetailUser.as_view()),
     path('signup', views.Signup.as_view(), name='sign-up'),
     path('confirmation/', views.confirmation, name='confirmation'),
 
@@ -19,4 +19,9 @@ urlpatterns = [
     re_path(r'^delete/$', djoser_views.UserDeleteView.as_view(), name='user-delete'),
     re_path(r'^create/$', djoser_views.UserCreateView.as_view(), name='user-create'),
     re_path(r'^logout/$', views.UserLogoutAllView.as_view(), name='user-logout-all'),
+
+    path('rooms/', views.ListRooms.as_view()),
+    path('rooms/<int:pk>/', views.DetailRoom.as_view()),
+    path('answers/', views.ListAnswers.as_view()),
+    path('answers/<int:pk>/', views.DetailAnswer.as_view()),
 ]

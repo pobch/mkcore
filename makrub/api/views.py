@@ -12,8 +12,8 @@ from django.template.loader import render_to_string
 from django.utils.http import urlsafe_base64_encode
 
 
-from core.models import User
-from .serializers import UserSerializer, SignupSerializer
+from core.models import User, Room, Answer
+from .serializers import UserSerializer, SignupSerializer, RoomSerializer, AnswerSerializer
 from .tokens import account_activation_token
 
 
@@ -75,3 +75,27 @@ def confirmation(request):
     """
 
     return Response(status=status.HTTP_200_OK)
+
+
+
+class ListRooms(generics.ListCreateAPIView):
+    queryset = Room.objects.all()
+    serializer_class = RoomSerializer
+
+    def perform_create(self, serializer):
+        serializer.save(room_owner=self.request.user)
+
+
+class DetailRoom(generics.RetrieveUpdateDestroyAPIView):
+    queryset = Room.objects.all()
+    serializer_class = RoomSerializer
+
+
+class ListAnswers(generics.ListCreateAPIView):
+    queryset = Answer.objects.all()
+    serializer_class = AnswerSerializer
+
+
+class DetailAnswer(generics.RetrieveUpdateDestroyAPIView):
+    queryset = Answer.objects.all()
+    serializer_class = AnswerSerializer
