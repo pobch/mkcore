@@ -13,8 +13,8 @@ from django.utils.http import urlsafe_base64_encode
 
 
 from core.models import User, Room, Answer
-from .serializers import UserSerializer, SignupSerializer, RoomSerializer, AnswerSerializer
-from .tokens import account_activation_token
+from ..serializers import UserSerializer, SignupSerializer, RoomSerializer, AnswerSerializer
+from ..tokens import account_activation_token
 
 
 class ListUsers(generics.ListCreateAPIView):
@@ -75,7 +75,6 @@ def confirmation(request):
     """
 
     return Response(status=status.HTTP_200_OK)
-
 
 
 class ListRooms(generics.ListCreateAPIView):
