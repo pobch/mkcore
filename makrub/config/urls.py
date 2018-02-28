@@ -23,5 +23,5 @@ urlpatterns = [
     path('djoser/', include('djoser.urls')),
     path('djoser/', include('djoser.urls.jwt')),
 
-    re_path(r'^otp/', include('otp.urls')),
+    # re_path(r'^otp/', include('otp.urls')),
 ]
