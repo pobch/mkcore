@@ -4,6 +4,7 @@ from rest_framework_jwt.views import verify_jwt_token
 from djoser import views as djoser_views
 from rest_framework_jwt import views as jwt_views
 
+
 urlpatterns = [
     path('', views.ListAccounts.as_view()),
     path('<int:pk>/', views.DetailAccount.as_view()),

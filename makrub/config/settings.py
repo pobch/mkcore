@@ -46,7 +46,8 @@ INSTALLED_APPS = [
     # 'django_otp.plugins.otp_static',
 
     'seminar',
-    'accounts',
+    'core',
+    'api',
     # 'otp',
 ]
 
@@ -135,7 +136,7 @@ USE_TZ = True
 STATIC_URL = '/static/'
 
 # add a new custom user model
-AUTH_USER_MODEL = 'accounts.Account'
+AUTH_USER_MODEL = 'core.User'
 
 # tell django rest framework that we're gonna use jwt for authen
 REST_FRAMEWORK = {
@@ -149,7 +150,7 @@ JWT_AUTH = {
     'JWT_EXPIRATION_DELTA': datetime.timedelta(minutes=5),
     'JWT_ALLOW_REFRESH': True,
     'JWT_REFRESH_EXPIRATION_DELTA': datetime.timedelta(minutes=10),
-    'JWT_GET_USER_SECRET_KEY': 'accounts.models.jwt_get_secret_key',
+    'JWT_GET_USER_SECRET_KEY': 'user.models.jwt_get_secret_key',
     # 'JWT_PAYLOAD_HANDLER': 'otp.utils.jwt_otp_payload',
 }
 
