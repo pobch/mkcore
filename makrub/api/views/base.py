@@ -1,5 +1,4 @@
-import uuid
-
+# import uuid
 from rest_framework import generics, status
 from rest_framework.response import Response
 from rest_framework.views import APIView
@@ -13,8 +12,8 @@ from django.utils.http import urlsafe_base64_encode
 
 
 from core.models import User, Room, Answer
-from ..serializers import UserSerializer, SignupSerializer, RoomSerializer, AnswerSerializer
-from ..tokens import account_activation_token
+from api.serializers import UserSerializer, SignupSerializer, RoomSerializer, AnswerSerializer
+from api.tokens import account_activation_token
 
 
 class ListUsers(generics.ListCreateAPIView):
@@ -58,14 +57,14 @@ class Signup(generics.CreateAPIView):
 """
 
 
-class UserLogoutAllView(APIView):
-    permission_classes = (IsAuthenticated,)
+# class UserLogoutAllView(APIView):
+#     permission_classes = (IsAuthenticated,)
 
-    def post(self, request, format=None):
-        user = request.user
-        user.jwt_secret = uuid.uuid4()
-        user.save()
-        return Response(status=status.HTTP_204_NO_CONTENT)
+#     def post(self, request, format=None):
+#         user = request.user
+#         user.jwt_secret = uuid.uuid4()
+#         user.save()
+#         return Response(status=status.HTTP_204_NO_CONTENT)
 
 
 @api_view(['GET'])

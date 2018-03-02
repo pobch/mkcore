@@ -1,4 +1,4 @@
-import uuid
+# import uuid
 from django.db import models
 from django.contrib.postgres.fields import JSONField
 from django.contrib.auth.base_user import AbstractBaseUser, BaseUserManager
@@ -30,7 +30,7 @@ class User(AbstractBaseUser):
     email = models.EmailField(verbose_name='E-mail address', max_length=255, unique=True)
     is_active = models.BooleanField(default=True)
     is_admin = models.BooleanField(default=False)
-    jwt_secret = models.UUIDField(default=uuid.uuid4)
+    # jwt_secret = models.UUIDField(default=uuid.uuid4)
 
     objects = UserManager()
 
@@ -56,8 +56,9 @@ class User(AbstractBaseUser):
         return self.is_admin
 
 
-def jwt_get_secret_key(user_model):
-        return user_model.jwt_secret
+# This function is set in 'settings.py' telling where JWT secret keys are stored
+# def jwt_get_secret_key(user_model):
+#         return user_model.jwt_secret
 
 
 class Room(models.Model):

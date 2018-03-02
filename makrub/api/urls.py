@@ -19,7 +19,7 @@ urlpatterns = [
     re_path(r'^view/$', djoser_views.UserView.as_view(), name='user-view'),
     re_path(r'^delete/$', djoser_views.UserDeleteView.as_view(), name='user-delete'),
     re_path(r'^create/$', djoser_views.UserCreateView.as_view(), name='user-create'),
-    re_path(r'^logout/$', base.UserLogoutAllView.as_view(), name='user-logout-all'),
+    # re_path(r'^logout/$', base.UserLogoutAllView.as_view(), name='user-logout-all'),
 
     path('rooms/', base.ListRooms.as_view()),
     path('rooms/<int:pk>/', base.DetailRoom.as_view()),

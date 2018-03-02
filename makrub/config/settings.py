@@ -144,12 +144,12 @@ REST_FRAMEWORK = {
     ),
 }
 
-# jwt lifetime
+# djangorestframework-jwt config:
 JWT_AUTH = {
     'JWT_EXPIRATION_DELTA': datetime.timedelta(minutes=5),
     'JWT_ALLOW_REFRESH': True,
     'JWT_REFRESH_EXPIRATION_DELTA': datetime.timedelta(minutes=10),
-    'JWT_GET_USER_SECRET_KEY': 'core.models.jwt_get_secret_key',
+    # 'JWT_GET_USER_SECRET_KEY': 'core.models.jwt_get_secret_key',
     # 'JWT_PAYLOAD_HANDLER': 'otp.utils.jwt_otp_payload',
 }
 
