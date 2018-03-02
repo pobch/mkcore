@@ -10,7 +10,7 @@ urlpatterns = [
     path('', base.ListUsers.as_view()),
     path('<int:pk>/', base.DetailUser.as_view()),
     path('signup', register.Signup.as_view(), name="signup"),
-    path('confirmation/', base.confirmation, name='confirmation'),
+    path('confirmation', base.confirmation, name='confirmation'),
 
     path('login/', jwt_views.ObtainJSONWebToken.as_view(), name='user-login'),
     path('login/refresh/', jwt_views.RefreshJSONWebToken.as_view(), name='user-login-refresh'),
