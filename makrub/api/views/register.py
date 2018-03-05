@@ -10,7 +10,7 @@ from core.services import mailer
 from core.tokens import user_confirmation_token
 from core.models import User
 
-from .. import serializers
+from api import serializers
 
 
 class Signup(APIView):

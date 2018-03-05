@@ -56,6 +56,20 @@ class User(AbstractBaseUser):
         return self.is_admin
 
 
+class Profile(models.Model):
+    user = models.OneToOneField(
+        User,
+        on_delete=models.CASCADE,
+        primary_key=True,
+    )
+    first_name = models.CharField(max_length=200,null=False,blank=True)
+    last_name = models.CharField(max_length=200,null=False,blank=True)
+    mobile_number = models.CharField(max_length=15,null=False,blank=True)
+
+    def __str__(self):
+        return self.first_name + ' ' + self.last_name
+
+
 # This function is set in 'settings.py' telling where JWT secret keys are stored
 # def jwt_get_secret_key(user_model):
 #         return user_model.jwt_secret
