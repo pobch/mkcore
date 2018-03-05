@@ -59,3 +59,4 @@ otp/
 
 # Secret
 .env
+.vscode

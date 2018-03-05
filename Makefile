@@ -1,5 +1,5 @@
 dev:
-	gunicorn --chdir makrub makrub.wsgi:application --reload
+	gunicorn --chdir $(PWD)/makrub config.wsgi:application --reload
 
 migrate:
 	./makrub/manage.py makemigrations
