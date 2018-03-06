@@ -3,9 +3,9 @@ from core.models import User, Room, Answer
 
 
 class UserSerializer(serializers.ModelSerializer):
-    own_rooms = serializers.StringRelatedField(many=True, read_only=True)
+    # own_rooms = serializers.StringRelatedField(many=True, read_only=True)
     # own_rooms = serializers.PrimaryKeyRelatedField(read_only=True, many=True)
-    guest_in_rooms = serializers.StringRelatedField(many=True, read_only=True)
+    # guest_in_rooms = serializers.StringRelatedField(many=True, read_only=True)
 
     class Meta:
         model = User
