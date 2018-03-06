@@ -11,4 +11,4 @@ start:
 	gunicron --chdir /app/mkcore-prod makrub.wsgi.application
 
 deploy:
-	rsync -avz -e "ssh -o StrictHostKeyChecking=no" ktapi ubuntu@${DEPLOY_HOST}:/app/ktapi-$(env)
+	rsync -avz -e "ssh -o StrictHostKeyChecking=no" ./ ubuntu@${DEPLOY_HOST}:/app/ktapi-$(env)/
