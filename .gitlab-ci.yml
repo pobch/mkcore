@@ -1,0 +1,24 @@
+image: python:alpine3.6
+
+stages:
+ - deploy
+
+deploy_prod:
+  stage: deploy
+  environment:
+    name: production
+    url: https://www.makrub.com
+
+  before_script:
+    - apk add --update rsync openssh-client make
+    - eval $(ssh-agent -s)
+    - echo "$APP_1_PRIVATE_KEY" | ssh-add -
+    - mkdir -p ~/.ssh
+    - echo "$APP_1_HOSTKEYS" > ~/.ssh/known_hosts
+
+  script:
+    - make deploy env=prod
+
+  when: manual
+  only:
+    - master
