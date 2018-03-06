@@ -5,29 +5,40 @@ from django.contrib.auth.base_user import AbstractBaseUser, BaseUserManager
 
 
 class UserManager(BaseUserManager):
-    def create_user(self, email, password=None):
+    def create_user(self, email, first_name, last_name, password=None):
         if not email:
             raise ValueError('Users must have an email address')
+        if not first_name:
+            raise ValueError('User must have their first name')
+        if not last_name:
+            raise ValueError('User must have their last name')
         user = self.model(
             email=self.normalize_email(email),
+            first_name=first_name,
+            last_name=last_name,
         )
         user.is_active = False
         user.set_password(password)
         user.save(using=self._db)
         return user
 
-    def create_superuser(self, email, password):
+    def create_superuser(self, email, first_name, last_name, password):
         user = self.create_user(
-            email,
+            email=email,
+            first_name=first_name,
+            last_name=last_name,
             password=password,
         )
         user.is_admin = True
+        # user.is_active = True
         user.save(using=self._db)
         return user
 
 
 class User(AbstractBaseUser):
     email = models.EmailField(verbose_name='E-mail address', max_length=255, unique=True)
+    first_name = models.CharField(blank=False,null=False,max_length=200)
+    last_name = models.CharField(blank=False,null=False,max_length=200)
     is_active = models.BooleanField(default=True)
     is_admin = models.BooleanField(default=False)
     # jwt_secret = models.UUIDField(default=uuid.uuid4)
@@ -54,20 +65,6 @@ class User(AbstractBaseUser):
         "Is the user a member of staff?"
         # Simplest possible answer: All admins are staff
         return self.is_admin
-
-
-class Profile(models.Model):
-    user = models.OneToOneField(
-        User,
-        on_delete=models.CASCADE,
-        primary_key=True,
-    )
-    first_name = models.CharField(max_length=200,null=False,blank=True)
-    last_name = models.CharField(max_length=200,null=False,blank=True)
-    mobile_number = models.CharField(max_length=15,null=False,blank=True)
-
-    def __str__(self):
-        return self.first_name + ' ' + self.last_name
 
 
 # This function is set in 'settings.py' telling where JWT secret keys are stored
