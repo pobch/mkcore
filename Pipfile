@@ -16,6 +16,7 @@ djangorestframework-jwt = "*"
 django-otp = "*"
 whitenoise = "*"
 django-dotenv = "*"
+pylint = "*"
 
 
 [dev-packages]

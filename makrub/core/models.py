@@ -95,4 +95,4 @@ class Answer(models.Model):
     answer = JSONField(null=True)
 
     def __str__(self):
-        return self.guestUser + ' answers in room: '  # + self.room
+        return self.guest_user + ' answers in room: '  # + self.room
