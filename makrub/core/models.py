@@ -86,20 +86,20 @@ class Room(models.Model):
         ('closed', 'Closed Room'),
     )
     # one owner per room
-    user = models.ForeignKey(User, related_name='rooms_owner', on_delete=models.CASCADE)
-    title = models.CharField(max_length=200, verbose_name='this is your room\'s name')
-    description = models.TextField()
+    user = models.ForeignKey(User, related_name='rooms_owner', on_delete=models.CASCADE, null=False)
+    title = models.CharField(max_length=200, null=False)
+    description = models.TextField(null=False)
     room_code = models.CharField(max_length=20, unique=True, blank=False, null=False)
     room_password = models.CharField(max_length=20, blank=False, null=False)
     instructor_name = models.CharField(max_length=200, blank=False, null=False)
     survey = JSONField(null=True)
     start_at = models.DateTimeField(blank=True, null=True)
     end_at = models.DateTimeField(blank=True, null=True)
-    image_url = models.FilePathField(blank=True, null=True)
-    status = models.CharField(max_length=10, choices=STATUS_CHOICES, default='draft')
-    created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now=True)
-    guests = models.ManyToManyField(User, related_name='rooms_guest')
+    image_url = models.URLField(blank=True, null=False) # this is CharField
+    status = models.CharField(max_length=10, choices=STATUS_CHOICES, default='draft', null=False)
+    created_at = models.DateTimeField(auto_now_add=True, null=False)
+    updated_at = models.DateTimeField(auto_now=True, null=False)
+    guests = models.ManyToManyField(User, related_name='rooms_guest') # can be [] (no need to set blank and null = False)
 
     def __str__(self):
         return self.room_code + ': ' + self.title
