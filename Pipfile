@@ -17,6 +17,7 @@ django-otp = "*"
 whitenoise = "*"
 django-dotenv = "*"
 pylint = "*"
+pylint-django = "*"
 
 
 [dev-packages]

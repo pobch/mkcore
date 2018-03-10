@@ -30,7 +30,7 @@ class UserManager(BaseUserManager):
             password=password,
         )
         user.is_admin = True
-        # user.is_active = True
+        user.is_active = True
         user.save(using=self._db)
         return user
 
@@ -46,6 +46,7 @@ class User(AbstractBaseUser):
     objects = UserManager()
 
     USERNAME_FIELD = 'email'
+    REQUIRED_FIELDS = ('first_name', 'last_name',)
 
     def __str__(self):
         return self.email
@@ -67,29 +68,51 @@ class User(AbstractBaseUser):
         return self.is_admin
 
 
+class UserProfile(models.Model):
+    user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='profile')
+    mobile_num = models.CharField(max_length=20, blank=True, null=False, default='')
+
+
 # This function is set in 'settings.py' telling where JWT secret keys are stored
 # def jwt_get_secret_key(user_model):
 #         return user_model.jwt_secret
 
 
 class Room(models.Model):
-    name = models.CharField(max_length=200, verbose_name='this is your room\'s name')
-    description = models.TextField()
+    # pattern : ( <actual value in database>, <user friendly choice name> )
+    STATUS_CHOICES = (
+        ('draft', 'Draft'),
+        ('active', 'Active Room'),
+        ('closed', 'Closed Room'),
+    )
     # one owner per room
-    room_owner = models.ForeignKey(User, related_name='own_rooms', on_delete=models.CASCADE)
-    room_login = models.CharField(max_length=200, unique=True, blank=False, null=False)
-    room_password = models.CharField(max_length=100, blank=False, null=False)
-    guests = models.ManyToManyField(User, related_name='guest_in_rooms')
+    user = models.ForeignKey(User, related_name='rooms_owner', on_delete=models.CASCADE)
+    title = models.CharField(max_length=200, verbose_name='this is your room\'s name')
+    description = models.TextField()
+    room_code = models.CharField(max_length=20, unique=True, blank=False, null=False)
+    room_password = models.CharField(max_length=20, blank=False, null=False)
+    instructor_name = models.CharField(max_length=200, blank=False, null=False)
     survey = JSONField(null=True)
+    start_at = models.DateTimeField(blank=True, null=True)
+    end_at = models.DateTimeField(blank=True, null=True)
+    image_url = models.FilePathField(blank=True, null=True)
+    status = models.CharField(max_length=10, choices=STATUS_CHOICES, default='draft')
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+    guests = models.ManyToManyField(User, related_name='rooms_guest')
 
     def __str__(self):
-        return self.name
+        return self.room_code + ': ' + self.title
 
 
-class Answer(models.Model):
-    # room = models.ForeignKey()
-    guest_user = models.ForeignKey(User, related_name='answers', on_delete=models.CASCADE)
+class RoomAnswer(models.Model):
+    room = models.ForeignKey(Room, related_name='guest_answers', on_delete=models.CASCADE)
+    user = models.ForeignKey(User, related_name='answers', on_delete=models.CASCADE)
     answer = JSONField(null=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        unique_together = ('room', 'user',)
 
     def __str__(self):
-        return self.guest_user + ' answers in room: '  # + self.room
+        return self.user.email + ' answer in room: ' + self.room.room_code

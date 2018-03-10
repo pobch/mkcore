@@ -1,9 +1,10 @@
 from django.contrib import admin
 from django.contrib.auth.models import Group
-from .models import User, Room, Answer
+from .models import User, UserProfile, Room, RoomAnswer
 
 
 admin.site.unregister(Group)
 admin.site.register(User)
+admin.site.register(UserProfile)
 admin.site.register(Room)
-admin.site.register(Answer)
+admin.site.register(RoomAnswer)

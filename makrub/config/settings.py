@@ -164,4 +164,4 @@ EMAIL_USE_TLS = True
 
 
 # Url
-APPEND_SLASH = False
+APPEND_SLASH = True

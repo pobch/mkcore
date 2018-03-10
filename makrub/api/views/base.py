@@ -10,8 +10,7 @@ from django.contrib.sites.shortcuts import get_current_site
 from django.template.loader import render_to_string
 from django.utils.http import urlsafe_base64_encode
 
-
-from core.models import User, Room, Answer
+from core.models import User, Room, RoomAnswer
 from api.serializers import UserSerializer, SignupSerializer, RoomSerializer, AnswerSerializer
 from api.tokens import account_activation_token
 
@@ -80,8 +79,8 @@ class ListRooms(generics.ListCreateAPIView):
     queryset = Room.objects.all()
     serializer_class = RoomSerializer
 
-    def perform_create(self, serializer):
-        serializer.save(room_owner=self.request.user)
+    # def perform_create(self, serializer):
+    #     serializer.save(room_owner=self.request.user)
 
 
 class DetailRoom(generics.RetrieveUpdateDestroyAPIView):
@@ -90,10 +89,10 @@ class DetailRoom(generics.RetrieveUpdateDestroyAPIView):
 
 
 class ListAnswers(generics.ListCreateAPIView):
-    queryset = Answer.objects.all()
+    queryset = RoomAnswer.objects.all()
     serializer_class = AnswerSerializer
 
 
 class DetailAnswer(generics.RetrieveUpdateDestroyAPIView):
-    queryset = Answer.objects.all()
+    queryset = RoomAnswer.objects.all()
     serializer_class = AnswerSerializer
