@@ -16,11 +16,11 @@ class UserSerializer(serializers.ModelSerializer):
     # own_rooms = serializers.StringRelatedField(many=True, read_only=True)
     # own_rooms = serializers.PrimaryKeyRelatedField(read_only=True, many=True)
     # guest_in_rooms = serializers.StringRelatedField(many=True, read_only=True)
-
     class Meta:
         model = User
         fields = '__all__'
         depth = 1
+        extra_kwargs = {'password': {'write_only': True}} # hide password field when GET request
 
 
 class UserProfileSerializer(serializers.ModelSerializer):
@@ -42,10 +42,8 @@ class RoomSerializer(serializers.ModelSerializer):
     guests = serializers.PrimaryKeyRelatedField(many=True, queryset=User.objects.all())
 
     class Meta:
-        # fields = ('title', 'description', 'user', 'guests',)
         fields = '__all__'
         model = Room
-        # extra_kwargs = {'status': {'required': False}}
 
 
 class AnswerSerializer(serializers.ModelSerializer):
