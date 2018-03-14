@@ -11,7 +11,7 @@ from django.template.loader import render_to_string
 from django.utils.http import urlsafe_base64_encode
 
 from core.models import User, Room, RoomAnswer, UserProfile
-from api.serializers import UserSerializer, SignupSerializer, UserProfileSerializer, RoomSerializer, AnswerSerializer
+from api.serializers import UserSerializer, SignupSerializer, UserProfileSerializer, RoomSerializer, RoomAnswerSerializer
 from api.tokens import account_activation_token
 
 
@@ -37,6 +37,39 @@ class DetailUserProfile(generics.RetrieveUpdateDestroyAPIView):
     serializer_class = UserProfileSerializer
 
 
+class ListRooms(generics.ListCreateAPIView):
+    queryset = Room.objects.all()
+    serializer_class = RoomSerializer
+
+    # def perform_create(self, serializer):
+    #     serializer.save(room_owner=self.request.user)
+
+
+class DetailRoom(generics.RetrieveUpdateDestroyAPIView):
+    queryset = Room.objects.all()
+    serializer_class = RoomSerializer
+
+
+class ListRoomAnswers(generics.ListCreateAPIView):
+    queryset = RoomAnswer.objects.all()
+    serializer_class = RoomAnswerSerializer
+
+
+class DetailRoomAnswer(generics.RetrieveUpdateDestroyAPIView):
+    queryset = RoomAnswer.objects.all()
+    serializer_class = RoomAnswerSerializer
+
+
+# class UserLogoutAllView(APIView):
+#     permission_classes = (IsAuthenticated,)
+
+#     def post(self, request, format=None):
+#         user = request.user
+#         user.jwt_secret = uuid.uuid4()
+#         user.save()
+#         return Response(status=status.HTTP_204_NO_CONTENT)
+
+
 class Signup(generics.CreateAPIView):
     serializer_class = SignupSerializer
 
@@ -54,7 +87,6 @@ class Signup(generics.CreateAPIView):
 
         print(message)
 
-
 """
         send_mail(
             'Thank you for registration',
@@ -65,17 +97,6 @@ class Signup(generics.CreateAPIView):
         )
 """
 
-
-# class UserLogoutAllView(APIView):
-#     permission_classes = (IsAuthenticated,)
-
-#     def post(self, request, format=None):
-#         user = request.user
-#         user.jwt_secret = uuid.uuid4()
-#         user.save()
-#         return Response(status=status.HTTP_204_NO_CONTENT)
-
-
 @api_view(['GET'])
 def confirmation(request):
     """
@@ -83,26 +104,3 @@ def confirmation(request):
     """
 
     return Response(status=status.HTTP_200_OK)
-
-
-class ListRooms(generics.ListCreateAPIView):
-    queryset = Room.objects.all()
-    serializer_class = RoomSerializer
-
-    # def perform_create(self, serializer):
-    #     serializer.save(room_owner=self.request.user)
-
-
-class DetailRoom(generics.RetrieveUpdateDestroyAPIView):
-    queryset = Room.objects.all()
-    serializer_class = RoomSerializer
-
-
-class ListAnswers(generics.ListCreateAPIView):
-    queryset = RoomAnswer.objects.all()
-    serializer_class = AnswerSerializer
-
-
-class DetailAnswer(generics.RetrieveUpdateDestroyAPIView):
-    queryset = RoomAnswer.objects.all()
-    serializer_class = AnswerSerializer

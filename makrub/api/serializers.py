@@ -20,10 +20,12 @@ class SignupSerializer(serializers.ModelSerializer):
 
 
 class UserSerializer(serializers.ModelSerializer):
-    # own_rooms = serializers.StringRelatedField(many=True, read_only=True)
-    # own_rooms = serializers.PrimaryKeyRelatedField(read_only=True, many=True)
-    # guest_in_rooms = serializers.StringRelatedField(many=True, read_only=True)
+    # serializers.PrimaryKeyRelatedField(read_only=True, many=True)
     profile = UserProfileSerializer(read_only=True)
+    # StringRelatedField has read_only=True as default :
+    rooms_owner = serializers.StringRelatedField(many=True)
+    rooms_guest = serializers.StringRelatedField(many=True)
+    answers = serializers.StringRelatedField(many=True)
 
     class Meta:
         model = User
@@ -65,15 +67,15 @@ class RoomSerializer(serializers.ModelSerializer):
     #     required=False
     # )
     # user = serializers.StringRelatedField() # auto read_only=True, need to declare perform_create in views.py
-    user = serializers.PrimaryKeyRelatedField(queryset=User.objects.all())
-    guests = serializers.PrimaryKeyRelatedField(many=True, queryset=User.objects.all())
+    user = serializers.PrimaryKeyRelatedField(queryset=User.objects.all()) # ForeignKey
+    guests = serializers.PrimaryKeyRelatedField(many=True, queryset=User.objects.all()) # ManyToMany
 
     class Meta:
         fields = '__all__'
         model = Room
 
 
-class AnswerSerializer(serializers.ModelSerializer):
+class RoomAnswerSerializer(serializers.ModelSerializer):
     # guest_user = serializers.PrimaryKeyRelatedField(queryset=User.objects.all())
     # guest_user_str = serializers.StringRelatedField(source='guest_user')
 

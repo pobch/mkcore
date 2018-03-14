@@ -70,6 +70,7 @@ class User(AbstractBaseUser):
 
 class UserProfile(models.Model):
     user = models.OneToOneField(User, related_name='profile', on_delete=models.CASCADE, null=True)
+
     mobile_num = models.CharField(max_length=20, blank=True, null=False, default='')
 
     def __str__(self):
@@ -90,6 +91,9 @@ class Room(models.Model):
     )
     # one owner per room
     user = models.ForeignKey(User, related_name='rooms_owner', on_delete=models.CASCADE, null=False)
+    # many guests per room, many rooms per user
+    guests = models.ManyToManyField(User, related_name='rooms_guest') # can be [] (no need to set blank and null = False)
+
     title = models.CharField(max_length=200, null=False)
     description = models.TextField(null=False)
     room_code = models.CharField(max_length=20, unique=True, blank=False, null=False)
@@ -102,15 +106,15 @@ class Room(models.Model):
     status = models.CharField(max_length=10, choices=STATUS_CHOICES, default='draft', null=False)
     created_at = models.DateTimeField(auto_now_add=True, null=False)
     updated_at = models.DateTimeField(auto_now=True, null=False)
-    guests = models.ManyToManyField(User, related_name='rooms_guest') # can be [] (no need to set blank and null = False)
 
     def __str__(self):
         return self.room_code + ': ' + self.title
 
 
 class RoomAnswer(models.Model):
-    room = models.ForeignKey(Room, related_name='guest_answers', on_delete=models.CASCADE)
+    room = models.ForeignKey(Room, related_name='guests_answers', on_delete=models.CASCADE)
     user = models.ForeignKey(User, related_name='answers', on_delete=models.CASCADE)
+
     answer = JSONField(null=True)
     created_at = models.DateTimeField(auto_now_add=True)
 
