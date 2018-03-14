@@ -10,8 +10,8 @@ from django.contrib.sites.shortcuts import get_current_site
 from django.template.loader import render_to_string
 from django.utils.http import urlsafe_base64_encode
 
-from core.models import User, Room, RoomAnswer
-from api.serializers import UserSerializer, SignupSerializer, RoomSerializer, AnswerSerializer
+from core.models import User, Room, RoomAnswer, UserProfile
+from api.serializers import UserSerializer, SignupSerializer, UserProfileSerializer, RoomSerializer, AnswerSerializer
 from api.tokens import account_activation_token
 
 
@@ -24,7 +24,17 @@ class ListUsers(generics.ListCreateAPIView):
 class DetailUser(generics.RetrieveUpdateDestroyAPIView):
     queryset = User.objects.all()
     serializer_class = UserSerializer
-    permission_classes = (IsAuthenticated,)
+    # permission_classes = (IsAuthenticated,)
+
+
+class ListUserProfiles(generics.ListCreateAPIView):
+    queryset = UserProfile.objects.all()
+    serializer_class = UserProfileSerializer
+
+
+class DetailUserProfile(generics.RetrieveUpdateDestroyAPIView):
+    queryset = UserProfile.objects.all()
+    serializer_class = UserProfileSerializer
 
 
 class Signup(generics.CreateAPIView):

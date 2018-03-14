@@ -5,7 +5,7 @@ from django.contrib.auth.base_user import AbstractBaseUser, BaseUserManager
 
 
 class UserManager(BaseUserManager):
-    def create_user(self, email, first_name, last_name, password=None):
+    def create_user(self, email, first_name, last_name, password=None, **kwargs):
         if not email:
             raise ValueError('Users must have an email address')
         if not first_name:
@@ -69,8 +69,11 @@ class User(AbstractBaseUser):
 
 
 class UserProfile(models.Model):
-    user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='profile')
+    user = models.OneToOneField(User, related_name='profile', on_delete=models.CASCADE, null=True)
     mobile_num = models.CharField(max_length=20, blank=True, null=False, default='')
+
+    def __str__(self):
+        return "user's mobile num: {}".format(self.mobile_num)
 
 
 # This function is set in 'settings.py' telling where JWT secret keys are stored

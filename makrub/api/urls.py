@@ -9,6 +9,8 @@ from .views import register, base
 urlpatterns = [
     path('users/', base.ListUsers.as_view()),
     path('users/<int:pk>/', base.DetailUser.as_view()),
+    path('users/profiles/', base.ListUserProfiles.as_view()),
+    path('users/profiles/<int:pk>/', base.DetailUserProfile.as_view()),
     path('signup/', register.Signup.as_view(), name="signup"),
     path('confirmation/', register.Confirmation.as_view(), name='confirmation'),
     path('login/', jwt_views.ObtainJSONWebToken.as_view(), name='user-login'),
