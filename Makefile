@@ -4,7 +4,7 @@ dev:
 	sudo docker run \
 		-it \
 		-p 8000:8000 \
-		-v $(pwd):/app \
+		-v ${PWD}:/app \
 		mkcore \
 		/usr/local/bin/uwsgi --http :8000 --chdir /app/makrub --wsgi-file /app/makrub/config/wsgi.py --py-autoreload 1
 
@@ -15,7 +15,7 @@ build:
 migrate:
 	sudo docker run \
 		-it \
-		-v $(pwd):/app \
+		-v ${PWD}:/app \
 		mkcore \
 		python makrub/manage.py migrate
 
