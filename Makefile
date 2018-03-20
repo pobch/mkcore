@@ -8,6 +8,7 @@ dev:
 		mkcore \
 		/usr/local/bin/uwsgi --http :8000 --chdir /app/makrub --wsgi-file /app/makrub/config/wsgi.py --py-autoreload 1
 
+.PHONY:
 build:
 	sudo docker build -t mkcore .
 
