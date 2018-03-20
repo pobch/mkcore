@@ -92,7 +92,7 @@ DATABASES = {
         'USER': 'makrub',
         'PASSWORD': 'localpass',
         'HOST': os.environ['DB_HOST'],
-        'PORT': '5432',
+        'PORT': os.environ['DB_PORT'],
     }
 }
 
