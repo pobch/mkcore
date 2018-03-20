@@ -1,7 +1,7 @@
 DEPLOY_HOST = app-1.studiotwist.co
 
 dev:
-	docker run \
+	sudo docker run \
 		-it \
 		-p 8000:8000 \
 		-v $(pwd):/app \
@@ -9,10 +9,10 @@ dev:
 		/usr/local/bin/uwsgi --http :8000 --chdir /app/makrub --wsgi-file /app/makrub/config/wsgi.py --py-autoreload 1
 
 build:
-	docker build -t mkcore .
+	sudo docker build -t mkcore .
 
 migrate:
-	docker run \
+	sudo docker run \
 		-it \
 		-v $(pwd):/app \
 		mkcore \
