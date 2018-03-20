@@ -48,6 +48,8 @@ class Confirmation(APIView):
         uidb64 = request.GET.get('uid')
         token = request.GET.get('token')
 
+        print("hello world 2")
+
         try:
             uid = force_text(urlsafe_base64_decode(uidb64))
             user = User.objects.get(pk=uid)

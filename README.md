@@ -20,11 +20,6 @@
     grant all privileges on database makrub to makrub ;
 ```
 
-## Running development server
-```
-    make dev
-```
-
 ## Running migration
 ```
     make migrate
@@ -44,3 +39,17 @@ Go to `http://127.0.0.1:8000/rooms/<pk>/` to get/change/delete each row by pk (t
 ## Account API
 - `http://127.0.0.1:8000/accounts/`
 - `http://127.0.0.1:8000/accounts/<pk>/`
+
+
+
+# Docker
+
+## Development
+```
+make dev
+```
+
+## Finding host IP in docker network
+```
+docker run -it python:3.6-alpine /bin/sh -c "/sbin/ip route|awk '/default/ { print \$3 }'"
+```
