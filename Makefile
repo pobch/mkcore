@@ -7,7 +7,9 @@ dev:
 		-v $(pwd):/app \
 		mkcore \
 		/usr/local/bin/uwsgi --http :8000 --chdir /app/makrub --wsgi-file /app/makrub/config/wsgi.py --py-autoreload 1
-	gunicorn --chdir $(PWD)/makrub config.wsgi:application --reload
+
+build:
+	docker build -t mkcore .
 
 migrate:
 	docker run \
