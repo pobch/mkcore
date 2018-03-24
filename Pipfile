@@ -18,6 +18,7 @@ whitenoise = "*"
 django-dotenv = "*"
 pylint = "*"
 pylint-django = "*"
+django-cors-headers = "*"
 
 
 [dev-packages]

@@ -9,10 +9,10 @@ class UserProfileSerializer(serializers.ModelSerializer):
         extra_kwargs = {'user': {'allow_null': True}}
 
 
-class SignupSerializer(serializers.ModelSerializer):
+class RegisterSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
-        fields = ('email', 'password')
+        fields = ('email', 'password', 'first_name', 'last_name')
 
     def create(self, validated_data):
         user = User.objects.create_user(**validated_data)

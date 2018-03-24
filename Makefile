@@ -19,6 +19,13 @@ migrate:
 		mkcore \
 		python makrub/manage.py migrate
 
+createsuperuser:
+	sudo docker run \
+		-it \
+		-v ${PWD}:/app \
+		mkcore \
+		python makrub/manage.py createsuperuser
+
 start:
 	gunicron --chdir /app/mkcore-prod makrub.wsgi.application
 

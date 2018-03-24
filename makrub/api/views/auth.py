@@ -5,6 +5,8 @@ from django.utils.http import urlsafe_base64_decode
 from rest_framework import status
 from rest_framework.views import APIView
 from rest_framework.response import Response
+from rest_framework.permissions import IsAuthenticated
+from rest_framework.authentication import TokenAuthentication
 
 from core.services import mailer
 from core.tokens import user_confirmation_token
@@ -13,13 +15,24 @@ from core.models import User
 from api import serializers
 
 
-class Signup(APIView):
+class CheckMe(APIView):
     """
-    Signup a new user
+    Check whether user auth is working or not
+    """
+    authentication_classes = (TokenAuthentication,)
+    permission_classes = (IsAuthenticated,)
+
+    def get(self, request, format="json"):
+        return Response("OK")
+
+
+class Register(APIView):
+    """
+    Register a new user
     """
 
     def post(self, request, format='json'):
-        serializer = serializers.SignupSerializer(data=request.data)
+        serializer = serializers.RegisterSerializer(data=request.data)
 
         if serializer.is_valid(raise_exception=True):
             user = serializer.save()
@@ -37,7 +50,7 @@ class Signup(APIView):
         return Response(status=status.HTTP_422_UNPROCESSABLE_ENTITY)
 
     def get_serializer(self):
-        return serializers.SignupSerializer()
+        return serializers.RegisterSerializer()
 
 
 class Confirmation(APIView):

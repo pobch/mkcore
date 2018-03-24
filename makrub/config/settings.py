@@ -39,7 +39,9 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
 
+    'corsheaders',
     'rest_framework',
+    'rest_framework.authtoken',
     'djoser',
     # 'django_otp',
     # 'django_otp.plugins.otp_totp',
@@ -58,6 +60,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'corsheaders.middleware.CorsMiddleware',
     'whitenoise.middleware.WhiteNoiseMiddleware'
 ]
 
@@ -145,6 +148,9 @@ REST_FRAMEWORK = {
     ),
 }
 
+# Enables django-rest-auth to use JWT tokens instead of regular tokens.
+REST_USE_JWT = True
+
 # djangorestframework-jwt config:
 JWT_AUTH = {
     'JWT_EXPIRATION_DELTA': datetime.timedelta(minutes=5),
@@ -165,3 +171,7 @@ EMAIL_USE_TLS = True
 
 # Url
 APPEND_SLASH = True
+
+
+# CORS
+CORS_ORIGIN_ALLOW_ALL = True

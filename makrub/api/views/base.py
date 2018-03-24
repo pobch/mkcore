@@ -11,7 +11,7 @@ from django.template.loader import render_to_string
 from django.utils.http import urlsafe_base64_encode
 
 from core.models import User, Room, RoomAnswer, UserProfile
-from api.serializers import UserSerializer, SignupSerializer, UserProfileSerializer, RoomSerializer, RoomAnswerSerializer
+from api.serializers import UserSerializer, UserProfileSerializer, RoomSerializer, RoomAnswerSerializer
 from api.tokens import account_activation_token
 
 
@@ -68,39 +68,3 @@ class DetailRoomAnswer(generics.RetrieveUpdateDestroyAPIView):
 #         user.jwt_secret = uuid.uuid4()
 #         user.save()
 #         return Response(status=status.HTTP_204_NO_CONTENT)
-
-
-class Signup(generics.CreateAPIView):
-    serializer_class = SignupSerializer
-
-    def perform_create(self, serializer):
-        user = serializer.save()
-
-        current_site = get_current_site(self.request)
-
-        message = render_to_string('email/confirmation_email.html', {
-            'user': user,
-            'domain': current_site.domain,
-            'uid': urlsafe_base64_encode(force_bytes(user.pk)),
-            'token': account_activation_token.make_token(user),
-        })
-
-        print(message)
-
-"""
-        send_mail(
-            'Thank you for registration',
-            'Here is the message',
-            'system.admin@makrub.com',
-            ['metz@studiotwist.co'],
-            fail_silently=False,
-        )
-"""
-
-@api_view(['GET'])
-def confirmation(request):
-    """
-    Confirm user registration
-    """
-
-    return Response(status=status.HTTP_200_OK)
