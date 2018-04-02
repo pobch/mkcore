@@ -94,8 +94,8 @@ DATABASES = {
         'NAME': 'makrub',
         'USER': 'makrub',
         'PASSWORD': 'localpass',
-        'HOST': os.environ['DB_HOST'],
-        'PORT': os.environ['DB_PORT'],
+        'HOST': os.environ['DB_HOST'], # DB_HOST=172.17.0.1
+        'PORT': os.environ['DB_PORT'], # DB_PORT=5432
     }
 }
 
@@ -153,7 +153,7 @@ REST_USE_JWT = True
 
 # djangorestframework-jwt config:
 JWT_AUTH = {
-    'JWT_EXPIRATION_DELTA': datetime.timedelta(minutes=5),
+    'JWT_EXPIRATION_DELTA': datetime.timedelta(minutes=60),
     'JWT_ALLOW_REFRESH': True,
     'JWT_REFRESH_EXPIRATION_DELTA': datetime.timedelta(minutes=10),
     # 'JWT_GET_USER_SECRET_KEY': 'core.models.jwt_get_secret_key',
