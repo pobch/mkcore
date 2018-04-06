@@ -13,13 +13,13 @@ urlpatterns = [
     path('confirmation/', auth.Confirmation.as_view(), name='confirmation'),
 
     # auth
-    path('auth/register', auth.Register.as_view(), name="auth_register"),
-    path('auth/check-me', auth.CheckMe.as_view(), name="auth_check_me"),
+    path('auth/register/', auth.Register.as_view(), name="auth_register"),
+    path('auth/check-me/', auth.CheckMe.as_view(), name="auth_check_me"),
 
     # djangorestframework-jwt
-    path('auth/login', jwt_views.ObtainJSONWebToken.as_view(), name='auth_login'),
-    path('auth/login/refresh', jwt_views.RefreshJSONWebToken.as_view(), name='auth_login_refresh'),
-    path('auth/login/verify', jwt_views.verify_jwt_token, name='auth_login_verify'),  # verify_jwt_token is a function
+    path('auth/login/', jwt_views.ObtainJSONWebToken.as_view(), name='auth_login'),
+    path('auth/login/refresh/', jwt_views.RefreshJSONWebToken.as_view(), name='auth_login_refresh'),
+    path('auth/login/verify/', jwt_views.verify_jwt_token, name='auth_login_verify'),  # verify_jwt_token is a function
 
     path('rooms/', base.ListRooms.as_view()),
     path('rooms/<int:pk>/', base.DetailRoom.as_view()),
