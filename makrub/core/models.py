@@ -108,7 +108,7 @@ class Room(models.Model):
     updated_at = models.DateTimeField(auto_now=True, null=False)
 
     def __str__(self):
-        return self.room_code + ': ' + self.title
+        return self.room_code + ':' + self.title
 
 
 class RoomAnswer(models.Model):
