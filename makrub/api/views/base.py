@@ -49,7 +49,7 @@ class ListRooms(generics.ListCreateAPIView):
 
     def get_queryset(self):
         user = self.request.user
-        return Room.objects.all().filter(user=user)
+        return Room.objects.filter(user=user).order_by('-updated_at')
 
     # def perform_create(self, serializer):
     #     serializer.save(room_owner=self.request.user)
