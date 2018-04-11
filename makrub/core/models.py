@@ -5,13 +5,13 @@ from django.contrib.auth.base_user import AbstractBaseUser, BaseUserManager
 
 
 class UserManager(BaseUserManager):
-    def create_user(self, email, first_name, last_name, password=None, **kwargs):
+    def create_user(self, email, first_name, last_name, password=None):
         if not email:
             raise ValueError('Users must have an email address')
         if not first_name:
-            raise ValueError('User must have their first name')
+            raise ValueError('User must provide their first name')
         if not last_name:
-            raise ValueError('User must have their last name')
+            raise ValueError('User must provide their last name')
         user = self.model(
             email=self.normalize_email(email),
             first_name=first_name,
@@ -39,7 +39,7 @@ class User(AbstractBaseUser):
     email = models.EmailField(verbose_name='E-mail address', max_length=255, unique=True)
     first_name = models.CharField(blank=False,null=False,max_length=200)
     last_name = models.CharField(blank=False,null=False,max_length=200)
-    is_active = models.BooleanField(default=True)
+    is_active = models.BooleanField(default=False)
     is_admin = models.BooleanField(default=False)
     # jwt_secret = models.UUIDField(default=uuid.uuid4)
 

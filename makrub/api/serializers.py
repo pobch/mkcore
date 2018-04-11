@@ -1,5 +1,7 @@
 from rest_framework import serializers
 from core.models import User, UserProfile, Room, RoomAnswer
+from django.core import exceptions
+import django.contrib.auth.password_validation as validators
 
 
 class UserProfileSerializer(serializers.ModelSerializer):
@@ -17,45 +19,6 @@ class RegisterSerializer(serializers.ModelSerializer):
     def create(self, validated_data):
         user = User.objects.create_user(**validated_data)
         return user
-
-
-class UserSerializer(serializers.ModelSerializer):
-    # serializers.PrimaryKeyRelatedField(read_only=True, many=True)
-    profile = UserProfileSerializer(read_only=True)
-    # StringRelatedField has read_only=True as default :
-    rooms_owner = serializers.StringRelatedField(many=True)
-    rooms_guest = serializers.StringRelatedField(many=True)
-    answers = serializers.StringRelatedField(many=True)
-
-    class Meta:
-        model = User
-        fields = '__all__'
-        extra_kwargs = {'password': {'write_only': True}} # hide password field when GET request
-
-    def create(self, validated_data):
-        return User.objects.create_user(**validated_data)
-
-    def validate(self, data):
-        try:
-            new_password = data['password']
-        except KeyError:
-            new_password = None
-            print('The user did not want to change their password (new password is not provided)')
-        if new_password:
-            print('The password is provided, check with confirm password here')
-        return data
-
-    def update(self, instance, validated_data):
-        instance.email = validated_data.get('email', instance.email)
-        instance.first_name = validated_data.get('first_name', instance.first_name)
-        instance.last_name = validated_data.get('last_name', instance.last_name)
-        instance.is_active = validated_data.get('is_active', instance.is_active)
-        instance.is_admin = validated_data.get('is_admin', instance.is_admin)
-        password = validated_data.get('password', None)
-        if password:
-            instance.set_password(password)
-        instance.save()
-        return instance
 
 
 class RoomSerializer(serializers.ModelSerializer):
@@ -82,3 +45,48 @@ class RoomAnswerSerializer(serializers.ModelSerializer):
     class Meta:
         fields = '__all__'
         model = RoomAnswer
+
+
+class UserSerializer(serializers.ModelSerializer):
+    # serializers.PrimaryKeyRelatedField(read_only=True, many=True)
+    profile = UserProfileSerializer(read_only=True)
+    answers = RoomAnswerSerializer(many=True, read_only=True)
+    # StringRelatedField cannot set 'read_only' and 'required' arguments. Use SlugRelatedField instead :
+    rooms_owner = serializers.SlugRelatedField(slug_field='title', many=True, read_only=True)
+    rooms_guest = serializers.SlugRelatedField(slug_field='title', many=True, read_only=True)
+
+    class Meta:
+        model = User
+        fields = '__all__'
+        read_only_fields = ('last_login', 'is_active', 'is_admin')
+        extra_kwargs = {
+            'password': {'write_only': True}, # hide password field when GET request
+            }
+
+    def validate(self, data):
+        super().validate(data)
+        user = User(**data)
+        password = data.get('password') # get return None by default in case of non-exist key (never throw Error)
+        errors = dict() # keys in this dict will be keys in JSON response in case an error occurs
+        try:
+            validators.validate_password(password=password, user=user)
+        except exceptions.ValidationError as e:
+            errors['password'] = list(e.messages)
+        if errors:
+            raise serializers.ValidationError(errors) # add to JSON
+        return data
+
+    def create(self, validated_data):
+        return User.objects.create_user(**validated_data)
+
+    def update(self, instance, validated_data):
+        instance.email = validated_data.get('email', instance.email)
+        instance.first_name = validated_data.get('first_name', instance.first_name)
+        instance.last_name = validated_data.get('last_name', instance.last_name)
+        instance.is_active = validated_data.get('is_active', instance.is_active)
+        instance.is_admin = validated_data.get('is_admin', instance.is_admin)
+        password = validated_data.get('password', None)
+        if password:
+            instance.set_password(password)
+        instance.save()
+        return instance
