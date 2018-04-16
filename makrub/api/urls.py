@@ -12,7 +12,7 @@ urlpatterns = [
     path('users/profiles/<int:pk>/', base.DetailUserProfile.as_view()),
 
     # auth
-    path('confirmation/', auth.Confirmation.as_view(), name='confirmation'),
+    path('auth/confirmation/', auth.Confirmation.as_view(), name='confirmation'),
     path('auth/register/', auth.Register.as_view(), name="auth_register"),
     path('auth/check-me/', auth.CheckMe.as_view(), name="auth_check_me"),
 

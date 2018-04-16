@@ -41,8 +41,6 @@ INSTALLED_APPS = [
 
     'corsheaders',
     'rest_framework',
-    # 'rest_framework.authtoken',
-    'djoser',
     # 'django_otp',
     # 'django_otp.plugins.otp_totp',
     # 'django_otp.plugins.otp_static',
@@ -167,11 +165,16 @@ JWT_AUTH = {
 
 
 # Email
+# in development environment, do this:
+# 1. python -m smtpd -n -c DebuggingServer localhost:1025
+# 2. EMAIL_HOST = 'localhost'
+# 3. EMAIL_PORT = 1025
+# 4. delete other EMAIL_* configs in settings.py
 EMAIL_HOST = os.environ['EMAIL_HOST']
 EMAIL_PORT = int(os.environ['EMAIL_PORT'])
 EMAIL_HOST_USER = os.environ['EMAIL_HOST_USER']
 EMAIL_HOST_PASSWORD = os.environ['EMAIL_HOST_PASSWORD']
-EMAIL_USE_TLS = True
+EMAIL_USE_TLS = os.environ['EMAIL_USE_TLS'].lower() == 'true'
 
 
 # Url

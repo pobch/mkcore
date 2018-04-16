@@ -1,6 +1,6 @@
 from django.urls import reverse
-from django.utils.encoding import force_text
-from django.utils.http import urlsafe_base64_decode
+from django.utils.encoding import force_bytes
+from django.utils.http import urlsafe_base64_decode, urlsafe_base64_encode, base36_to_int
 
 from rest_framework import status
 from rest_framework.views import APIView
@@ -8,8 +8,7 @@ from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.authentication import TokenAuthentication
 
-from core.services import mailer
-from core.tokens import user_confirmation_token
+from core.services import mailer, tokens
 from core.models import User
 
 from api import serializers
@@ -30,19 +29,20 @@ class Register(APIView):
     """
     Register a new user
     """
-
     def post(self, request, format='json'):
-        serializer = serializers.RegisterSerializer(data=request.data)
+        serializer = serializers.UserSerializer(data=request.data)
 
         if serializer.is_valid(raise_exception=True):
             user = serializer.save()
 
             confirmation_url = request.build_absolute_uri(reverse('confirmation'))
-            token = user_confirmation_token.make_token(user)
+            token = tokens.user_confirmation_token.make_token(user)
+            uid = urlsafe_base64_encode(force_bytes(user.pk)).decode()
 
             mailer.send_confirmation_email(user, {
                 'confirmation_url': confirmation_url,
                 'token': token,
+                'uid': uid,
             })
 
             return Response({'id': user.pk})
@@ -50,7 +50,7 @@ class Register(APIView):
         return Response(status=status.HTTP_422_UNPROCESSABLE_ENTITY)
 
     def get_serializer(self):
-        return serializers.RegisterSerializer()
+        return serializers.UserSerializer()
 
 
 class Confirmation(APIView):
@@ -58,18 +58,21 @@ class Confirmation(APIView):
     Confirm user's email and make that accout activated
     """
     def get(self, request, format='json'):
-        uidb64 = request.GET.get('uid')
-        token = request.GET.get('token')
-
-        print("hello world 2")
+        uidb64 = self.request.query_params.get('uid')
+        token = self.request.query_params.get('token')
 
         try:
-            uid = force_text(urlsafe_base64_decode(uidb64))
+            uid = urlsafe_base64_decode(uidb64).decode()
+            # ts_b36, hash = token.split("-")
+            # ts = base36_to_int(ts_b36)
+            # # ts encoded from these command;
+            # # from datetime import date
+            # # ts = (date.today() - date(2001,1,1)).days - 1
             user = User.objects.get(pk=uid)
         except(TypeError, ValueError, OverflowError, User.DoesNotExist):
             user = None
 
-        if user is not None and user_confirmation_token.check_token(user, token):
+        if user is not None and tokens.user_confirmation_token.check_token(user, token):
             user.is_active = True
             user.save()
 

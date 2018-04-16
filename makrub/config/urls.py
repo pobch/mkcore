@@ -19,8 +19,6 @@ from django.urls import path, include
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('api/', include('api.urls')),
-    path('djoser/', include('djoser.urls')),
-    path('djoser/', include('djoser.urls.jwt')),
 
     # re_path(r'^otp/', include('otp.urls')),
 ]

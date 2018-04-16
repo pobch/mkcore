@@ -7,11 +7,10 @@ name = "pypi"
 
 [packages]
 
-django = "*"
+Django = "*"
 djangorestframework = "*"
 "psycopg2" = "==2.7.3"
 gunicorn = "*"
-djoser = "*"
 djangorestframework-jwt = "*"
 django-otp = "*"
 whitenoise = "*"
