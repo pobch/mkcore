@@ -39,13 +39,17 @@ class Register(APIView):
             token = tokens.user_confirmation_token.make_token(user)
             uid = urlsafe_base64_encode(force_bytes(user.pk)).decode()
 
-            mailer.send_confirmation_email(user, {
-                'confirmation_url': confirmation_url,
-                'token': token,
-                'uid': uid,
-            })
-
-            return Response({'id': user.pk})
+            try:
+                mailer.send_confirmation_email(user, {
+                    'confirmation_url': confirmation_url,
+                    'token': token,
+                    'uid': uid,
+                })
+                return Response({'id': user.pk})
+            except:
+                print('Unexpected errors on sending an e-mail')
+                user.delete()
+                raise
 
         return Response(status=status.HTTP_422_UNPROCESSABLE_ENTITY)
 
