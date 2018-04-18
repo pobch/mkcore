@@ -20,8 +20,8 @@ class RoomSerializer(serializers.ModelSerializer):
     #     required=False
     # )
     # user = serializers.StringRelatedField() # auto read_only=True, need to declare perform_create in views.py
-    user = serializers.PrimaryKeyRelatedField(queryset=User.objects.all()) # ForeignKey
-    guests = serializers.PrimaryKeyRelatedField(many=True, queryset=User.objects.all()) # ManyToMany
+    user = serializers.PrimaryKeyRelatedField(read_only=True) # ForeignKey
+    guests = serializers.PrimaryKeyRelatedField(many=True, read_only=True) # ManyToMany
 
     class Meta:
         fields = '__all__'

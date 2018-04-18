@@ -57,8 +57,8 @@ class ListRooms(generics.ListCreateAPIView):
         else:
             return Room.objects.all()
 
-    # def perform_create(self, serializer):
-    #     serializer.save(room_owner=self.request.user)
+    def perform_create(self, serializer):
+        serializer.save(user=self.request.user)
 
 
 class DetailRoom(generics.RetrieveUpdateDestroyAPIView):
