@@ -40,10 +40,13 @@ class RoomAnswerSerializer(serializers.ModelSerializer):
 class UserSerializer(serializers.ModelSerializer):
     # serializers.PrimaryKeyRelatedField(read_only=True, many=True)
     profile = UserProfileSerializer(read_only=True)
-    answers = RoomAnswerSerializer(many=True, read_only=True)
-    # StringRelatedField cannot set 'read_only' and 'required' arguments. Use SlugRelatedField instead :
+    answers = serializers.HyperlinkedRelatedField(view_name='answer-detail', many=True, read_only=True, allow_null=True)
+    # answers = RoomAnswerSerializer(many=True, read_only=True)
+    # # StringRelatedField cannot set 'read_only' and 'required' arguments. Use SlugRelatedField instead :
     rooms_owner = serializers.SlugRelatedField(slug_field='title', many=True, read_only=True)
+    rooms_owner_links = serializers.HyperlinkedRelatedField(view_name='room-detail', source='rooms_owner', many=True, read_only=True, allow_null=True)
     rooms_guest = serializers.SlugRelatedField(slug_field='title', many=True, read_only=True)
+    rooms_guest_links = serializers.HyperlinkedRelatedField(view_name='room-detail', source='rooms_guest', many=True, read_only=True, allow_null=True)
 
     class Meta:
         model = User

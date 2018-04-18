@@ -14,15 +14,15 @@ urlpatterns = [
     path('auth/register/', auth.Register.as_view(), name="auth_register"),
     path('auth/confirmation/', auth.Confirmation.as_view(), name='confirmation'),
     path('auth/check-me/', auth.CheckMe.as_view(), name="auth_check_me"),
-    path('users/', base.ListUsers.as_view()),
-    path('users/<int:pk>/', base.DetailUser.as_view()),
+    path('users/', base.ListUsers.as_view(), name='user-list'),
+    path('users/<int:pk>/', base.DetailUser.as_view(), name='user-detail'),
     path('users/profiles/', base.ListUserProfiles.as_view()),
     path('users/profiles/<int:pk>/', base.DetailUserProfile.as_view()),
 
     path('rooms/', base.ListRooms.as_view()),
-    path('rooms/<int:pk>/', base.DetailRoom.as_view()),
+    path('rooms/<int:pk>/', base.DetailRoom.as_view(), name='room-detail'),
     path('answers/', base.ListRoomAnswers.as_view()),
-    path('answers/<int:pk>/', base.DetailRoomAnswer.as_view()),
+    path('answers/<int:pk>/', base.DetailRoomAnswer.as_view(), name='answer-detail'),
 
     # djoser
     # re_path(r'^view/$', djoser_views.UserView.as_view(), name='user-view'),

@@ -13,7 +13,7 @@ from django.utils.http import urlsafe_base64_encode
 from core.models import User, Room, RoomAnswer, UserProfile
 from api.serializers import UserSerializer, UserProfileSerializer, RoomSerializer, RoomAnswerSerializer
 from api.tokens import account_activation_token
-from api.permissions import IsOwnerForUserModel, IsOwner
+from api.permissions import IsOwnerForUserModel, IsOwner, IsOwnerOrGuest
 
 
 # For testing purpose only. Have to delete this view in production
@@ -49,7 +49,13 @@ class ListRooms(generics.ListCreateAPIView):
 
     def get_queryset(self):
         user = self.request.user
-        return Room.objects.filter(user=user).order_by('-updated_at')
+        query = self.request.query_params.get('query', None)
+        if query == 'owner':
+            return Room.objects.filter(user=user).order_by('-updated_at')
+        if query == 'guest':
+            return Room.objects.filter(guests=user)
+        else:
+            return Room.objects.all()
 
     # def perform_create(self, serializer):
     #     serializer.save(room_owner=self.request.user)
@@ -58,7 +64,7 @@ class ListRooms(generics.ListCreateAPIView):
 class DetailRoom(generics.RetrieveUpdateDestroyAPIView):
     queryset = Room.objects.all()
     serializer_class = RoomSerializer
-    permission_classes = (IsOwner,)
+    permission_classes = (IsOwnerOrGuest,)
 
 
 class ListRoomAnswers(generics.ListCreateAPIView):
