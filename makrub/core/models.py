@@ -41,6 +41,8 @@ class User(AbstractBaseUser):
     last_name = models.CharField(blank=False,null=False,max_length=200)
     is_active = models.BooleanField(default=False)
     is_admin = models.BooleanField(default=False)
+    created_at = models.DateTimeField(auto_now_add=True, null=False)
+    updated_at = models.DateTimeField(auto_now=True, null=False)
     # jwt_secret = models.UUIDField(default=uuid.uuid4)
 
     objects = UserManager()

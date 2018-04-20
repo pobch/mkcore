@@ -1,18 +1,10 @@
 # import uuid
 from rest_framework import generics, status
 from rest_framework.response import Response
-from rest_framework.views import APIView
 from rest_framework.permissions import IsAuthenticated, AllowAny
-from rest_framework.decorators import api_view
-
-from django.utils.encoding import force_bytes
-from django.contrib.sites.shortcuts import get_current_site
-from django.template.loader import render_to_string
-from django.utils.http import urlsafe_base64_encode
 
 from core.models import User, Room, RoomAnswer, UserProfile
 from api.serializers import UserSerializer, UserProfileSerializer, RoomSerializer, RoomAnswerSerializer
-from api.tokens import account_activation_token
 from api.permissions import IsOwnerForUserModel, IsOwner, IsOwnerOrGuest
 
 
@@ -51,11 +43,10 @@ class ListRooms(generics.ListCreateAPIView):
         user = self.request.user
         query = self.request.query_params.get('query', None)
         if query == 'owner':
-            return Room.objects.filter(user=user).order_by('-updated_at')
+            return Room.objects.filter(user=user).order_by('-created_at')
         if query == 'guest':
             return Room.objects.filter(guests=user)
-        else:
-            return Room.objects.all()
+        return Room.objects.all()
 
     def perform_create(self, serializer):
         serializer.save(user=self.request.user)
