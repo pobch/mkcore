@@ -94,7 +94,11 @@ class Room(models.Model):
     # one owner per room
     user = models.ForeignKey(User, related_name='rooms_owner', on_delete=models.CASCADE, null=False)
     # many guests per room, many rooms per user
-    guests = models.ManyToManyField(User, related_name='rooms_guest') # can be [] (no need to set blank and null = False)
+    guests = models.ManyToManyField(
+        User,
+        related_name='rooms_guest',
+        through='GuestRoomRelation')
+        # can be [] (no need to set blank and null = False)
 
     title = models.CharField(max_length=200, null=False)
     description = models.TextField(null=False)
@@ -125,3 +129,13 @@ class RoomAnswer(models.Model):
 
     def __str__(self):
         return self.user.email + ' answer in room: ' + self.room.room_code
+
+
+class GuestRoomRelation(models.Model):
+    guest = models.ForeignKey(User, on_delete=models.CASCADE)
+    room_guest = models.ForeignKey(Room, on_delete=models.CASCADE)
+    join_date = models.DateTimeField(null=False, auto_now_add=True)
+
+    def __str__(self):
+        return '{0} {1} is a guest in this room: {2} {3}'.format(
+            self.guest.id, self.guest.email, self.room_guest.id, self.room_guest.title)

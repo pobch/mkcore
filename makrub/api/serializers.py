@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from core.models import User, UserProfile, Room, RoomAnswer
+from core.models import User, UserProfile, Room, RoomAnswer, GuestRoomRelation
 from django.core import exceptions
 import django.contrib.auth.password_validation as validators
 
@@ -21,7 +21,7 @@ class RoomSerializer(serializers.ModelSerializer):
     # )
     # user = serializers.StringRelatedField() # auto read_only=True, need to declare perform_create in views.py
     user = serializers.PrimaryKeyRelatedField(read_only=True) # ForeignKey
-    guests = serializers.PrimaryKeyRelatedField(many=True, queryset=User.objects.all()) # , read_only=True # ManyToMany
+    guests = serializers.PrimaryKeyRelatedField(many=True, read_only=True) # ManyToMany
 
     class Meta:
         fields = '__all__'
@@ -83,3 +83,9 @@ class UserSerializer(serializers.ModelSerializer):
             instance.set_password(password)
         instance.save()
         return instance
+
+
+class GuestRoomRelationSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = GuestRoomRelation
+        fields = '__all__'
