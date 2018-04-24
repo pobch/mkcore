@@ -80,11 +80,10 @@ class JoinRoom(views.APIView):
         guestObj = request.user
         data = {'guest': guestObj.id, 'room_guest': roomObj.id}
         serializer = GuestRoomRelationSerializer(data=data)
-        if serializer.is_valid(raise_exception=True):
-            serializer.save()
-            roomSerialize = RoomSerializer(roomObj)
-            return Response(roomSerialize.data)
-        return Response(statu=status.HTTP_404_NOT_FOUND)
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+        roomSerialize = RoomSerializer(roomObj)
+        return Response(roomSerialize.data)
 
 
 # class UserLogoutAllView(APIView):

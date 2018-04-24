@@ -136,6 +136,9 @@ class GuestRoomRelation(models.Model):
     room_guest = models.ForeignKey(Room, on_delete=models.CASCADE)
     join_date = models.DateTimeField(null=False, auto_now_add=True)
 
+    class Meta:
+        unique_together = ('guest', 'room_guest',)
+
     def __str__(self):
         return '{0} {1} is a guest in this room: {2} {3}'.format(
             self.guest.id, self.guest.email, self.room_guest.id, self.room_guest.title)
