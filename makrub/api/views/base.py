@@ -4,8 +4,8 @@ from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated, AllowAny
 from django.shortcuts import get_object_or_404
 
-from core.models import User, Room, RoomAnswer, UserProfile
-from api.serializers import UserSerializer, UserProfileSerializer, RoomSerializer, RoomAnswerSerializer, GuestRoomRelationSerializer
+from core.models import User, Room, RoomAnswer, UserProfile, GuestRoomRelation
+from api.serializers import UserSerializer, UserProfileSerializer, RoomSerializer, RoomAnswerSerializer
 from api.permissions import IsOwnerForUserModel, IsOwner, IsOwnerOrGuest
 
 
@@ -72,18 +72,39 @@ class DetailRoomAnswer(generics.RetrieveUpdateDestroyAPIView):
 class JoinRoom(views.APIView):
     permission_classes = (IsAuthenticated,)
 
-    def post(self, request, format='json'):
-        filter = {}
+    def post(self, request):
+        """
+        receive 'room_code' and 'room_password'
+        then find room to join
+        then create new record in m2m relation model
+        """
+        filter_keywords = {}
         for field in ['room_code', 'room_password']:
-            filter[field] = self.request.data.get(field)
-        roomObj = get_object_or_404(Room.objects.all(), **filter)
-        guestObj = request.user
-        data = {'guest': guestObj.id, 'room_guest': roomObj.id}
-        serializer = GuestRoomRelationSerializer(data=data)
-        serializer.is_valid(raise_exception=True)
-        serializer.save()
-        roomSerialize = RoomSerializer(roomObj)
-        return Response(roomSerialize.data)
+            filter_keywords[field] = request.data.get(field, '')
+        room_obj = get_object_or_404(Room.objects.all(), **filter_keywords)
+        guest_obj = request.user
+        # data = {'user': guest_obj.id, 'room_guest': room_obj.id}
+        # serializer = GuestRoomRelationSerializer(data=data)
+        # serializer.is_valid(raise_exception=True)
+        # serializer.save()
+        guest_room_relation_obj = GuestRoomRelation.objects.get_or_create(user=guest_obj, room_guest=room_obj)
+        room_serialize = RoomSerializer(room_obj)
+        return Response(room_serialize.data)
+
+
+class LeaveRoom(views.APIView):
+    permission_classes = (IsOwnerOrGuest,)
+
+    def post(self, request):
+        """
+        receive 'user' and 'room_id'
+        then filter user obj and room obj in m2m relation model and delete this record
+        """
+        room_obj = get_object_or_404(Room.objects.all(), id=request.data.get('room_id'))
+        guest_obj = request.user
+        guest_room_relation_obj = get_object_or_404(GuestRoomRelation, user=guest_obj, room_guest=room_obj)
+        guest_room_relation_obj.delete()
+        return Response('Leave success', status=status.HTTP_200_OK)
 
 
 # class UserLogoutAllView(APIView):
@@ -108,11 +129,11 @@ class JoinRoom(views.APIView):
 #     # Business logic :
 #     def get_object(self):
 #         queryset = self.get_queryset()
-#         filter = {}
+#         filter_keywords = {}
 #         for field in self.multiple_lookup_fields:
-#             filter[field] = self.request.data.get(field)
+#             filter_keywords[field] = self.request.data.get(field)
 
-#         obj = get_object_or_404(queryset, **filter)
+#         obj = get_object_or_404(queryset, **filter_keywords)
 #         self.check_object_permissions(self.request, obj)
 #         return obj
 

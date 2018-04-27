@@ -26,6 +26,7 @@ class RoomSerializer(serializers.ModelSerializer):
     class Meta:
         fields = '__all__'
         model = Room
+        extra_kwargs = {'room_password': {'required': False}}
 
 
 class RoomAnswerSerializer(serializers.ModelSerializer):
@@ -83,9 +84,3 @@ class UserSerializer(serializers.ModelSerializer):
             instance.set_password(password)
         instance.save()
         return instance
-
-
-class GuestRoomRelationSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = GuestRoomRelation
-        fields = '__all__'

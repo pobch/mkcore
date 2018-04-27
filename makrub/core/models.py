@@ -103,7 +103,7 @@ class Room(models.Model):
     title = models.CharField(max_length=200, null=False)
     description = models.TextField(null=False)
     room_code = models.CharField(max_length=20, unique=True, blank=False, null=False)
-    room_password = models.CharField(max_length=20, blank=False, null=False)
+    room_password = models.CharField(max_length=20, blank=True, null=False)
     instructor_name = models.CharField(max_length=200, blank=False, null=False)
     survey = JSONField(null=True)
     start_at = models.DateTimeField(blank=True, null=True)
@@ -132,12 +132,12 @@ class RoomAnswer(models.Model):
 
 
 class GuestRoomRelation(models.Model):
-    guest = models.ForeignKey(User, on_delete=models.CASCADE)
+    user = models.ForeignKey(User, on_delete=models.CASCADE) # guest user
     room_guest = models.ForeignKey(Room, on_delete=models.CASCADE)
     join_date = models.DateTimeField(null=False, auto_now_add=True)
 
     class Meta:
-        unique_together = ('guest', 'room_guest',)
+        unique_together = ('user', 'room_guest',)
 
     def __str__(self):
         return '{0} {1} is a guest in this room: {2} {3}'.format(
