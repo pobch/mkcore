@@ -21,10 +21,10 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 # See https://docs.djangoproject.com/en/2.0/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = '%zmixicnvgn8gn)+ybg&%wx)fzk7oo3t4t#(wl2n*qzbk*vu23'
+SECRET_KEY = os.environ.get('SECRET_KEY', '%zmixicnvgn8gn)+ybg&%wx)fzk7oo3t4t#(wl2n*qzbk*vu23')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = bool(os.environ.get('DEBUG', True))
 
 ALLOWED_HOSTS = []
 
@@ -92,8 +92,8 @@ DATABASES = {
         'NAME': 'makrub',
         'USER': 'makrub',
         'PASSWORD': 'localpass',
-        'HOST': os.environ['DB_HOST'], # DB_HOST=172.17.0.1
-        'PORT': os.environ['DB_PORT'], # DB_PORT=5432
+        'HOST': os.environ.get('DB_HOST'), # DB_HOST=172.17.0.1
+        'PORT': os.environ.get('DB_PORT'), # DB_PORT=5432
     }
 }
 
@@ -170,11 +170,11 @@ JWT_AUTH = {
 # 2. EMAIL_HOST = 'localhost'
 # 3. EMAIL_PORT = 1025
 # 4. delete other EMAIL_* configs in settings.py
-EMAIL_HOST = os.environ['EMAIL_HOST']
-EMAIL_PORT = int(os.environ['EMAIL_PORT'])
-EMAIL_HOST_USER = os.environ['EMAIL_HOST_USER']
-EMAIL_HOST_PASSWORD = os.environ['EMAIL_HOST_PASSWORD']
-EMAIL_USE_TLS = os.environ['EMAIL_USE_TLS'].lower() == 'true'
+EMAIL_HOST = os.environ.get('EMAIL_HOST')
+EMAIL_PORT = int(os.environ.get('EMAIL_PORT'))
+EMAIL_HOST_USER = os.environ.get('EMAIL_HOST_USER')
+EMAIL_HOST_PASSWORD = os.environ.get('EMAIL_HOST_PASSWORD')
+EMAIL_USE_TLS = os.environ.get('EMAIL_USE_TLS', 'False').lower() == 'true'
 
 
 # Url
