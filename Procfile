@@ -1,1 +1,1 @@
-web: gunicorn makrub.config.wsgi --log-file -
+web: sh -c 'cd makrub && gunicorn config.wsgi --log-file -'
