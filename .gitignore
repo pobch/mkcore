@@ -49,8 +49,6 @@ coverage.xml
 # Sphinx documentation
 docs/_build/
 
-db.sqlite3
-
 # Note
 /Note*
 
@@ -60,3 +58,9 @@ otp/
 # Secret
 .env
 .vscode
+
+# Text backup files
+*.bak
+
+#Database
+*.sqlite3

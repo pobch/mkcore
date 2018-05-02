@@ -86,6 +86,7 @@ WSGI_APPLICATION = 'config.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/2.0/ref/settings/#databases
 
+
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
@@ -156,9 +157,9 @@ REST_FRAMEWORK = {
 
 # djangorestframework-jwt config:
 JWT_AUTH = {
-    'JWT_EXPIRATION_DELTA': datetime.timedelta(minutes=60),
+    'JWT_EXPIRATION_DELTA': datetime.timedelta(days=30),
     'JWT_ALLOW_REFRESH': True,
-    'JWT_REFRESH_EXPIRATION_DELTA': datetime.timedelta(minutes=10),
+    'JWT_REFRESH_EXPIRATION_DELTA': datetime.timedelta(days=365),
     # 'JWT_GET_USER_SECRET_KEY': 'core.models.jwt_get_secret_key',
     # 'JWT_PAYLOAD_HANDLER': 'otp.utils.jwt_otp_payload',
 }
