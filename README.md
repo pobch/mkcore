@@ -1,6 +1,7 @@
 # Makrub Application
 
-## STATUS: Developing
+## STATUS:
+Developing
 
 ## Prerequisites
 - make
