@@ -122,7 +122,7 @@ class RoomAnswer(models.Model):
     user = models.ForeignKey(User, related_name='answers', on_delete=models.CASCADE)
 
     answer = JSONField(null=True)
-    created_at = models.DateTimeField(auto_now_add=True)
+    created_at = models.DateTimeField(auto_now_add=True, null=False)
 
     class Meta:
         unique_together = ('room', 'user',)

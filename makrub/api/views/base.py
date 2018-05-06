@@ -63,10 +63,23 @@ class ListRoomAnswers(generics.ListCreateAPIView):
     queryset = RoomAnswer.objects.all()
     serializer_class = RoomAnswerSerializer
 
+    def perform_create(self, serializer):
+        serializer.save(user=self.request.user)
 
-class DetailRoomAnswer(generics.RetrieveUpdateDestroyAPIView):
+
+class DetailRoomAnswer(generics.RetrieveAPIView):
     queryset = RoomAnswer.objects.all()
     serializer_class = RoomAnswerSerializer
+
+    def get_object(self):
+        queryset = self.get_queryset()
+        filterField = {
+            'room': get_object_or_404(Room.objects.all(), id=self.kwargs['room']),
+            'user': self.request.user
+        }
+        obj = get_object_or_404(queryset, **filterField)
+        self.check_object_permissions(self.request, obj)
+        return obj
 
 
 class JoinRoom(views.APIView):

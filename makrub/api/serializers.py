@@ -30,12 +30,13 @@ class RoomSerializer(serializers.ModelSerializer):
 
 
 class RoomAnswerSerializer(serializers.ModelSerializer):
-    # guest_user = serializers.PrimaryKeyRelatedField(queryset=User.objects.all())
-    # guest_user_str = serializers.StringRelatedField(source='guest_user')
+    # user = serializers.PrimaryKeyRelatedField(queryset=User.objects.all())
+    # user_str = serializers.StringRelatedField(source='user')
 
     class Meta:
         fields = '__all__'
         model = RoomAnswer
+        read_only_fields = ('user',)
 
 
 class UserSerializer(serializers.ModelSerializer):
