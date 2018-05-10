@@ -117,6 +117,10 @@ class LeaveRoom(views.APIView):
         guest_obj = request.user
         guest_room_relation_obj = get_object_or_404(GuestRoomRelation, user=guest_obj, room_guest=room_obj)
         guest_room_relation_obj.delete()
+        ##### Work around (Temp) ######
+        room_answer_obj = get_object_or_404(RoomAnswer, user=guest_obj, room=room_obj)
+        room_answer_obj.delete()
+        ###############################
         return Response('Leave success', status=status.HTTP_200_OK)
 
 
