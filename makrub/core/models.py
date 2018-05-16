@@ -118,17 +118,15 @@ class Room(models.Model):
 
 
 class RoomAnswer(models.Model):
-    room = models.ForeignKey(Room, related_name='guests_answers', on_delete=models.CASCADE)
-    user = models.ForeignKey(User, related_name='answers', on_delete=models.CASCADE)
+    guest_room_relation = models.OneToOneField('GuestRoomRelation',
+        related_name='answer_detail', null=True, on_delete=models.CASCADE)
 
     answer = JSONField(null=True)
     created_at = models.DateTimeField(auto_now_add=True, null=False)
 
-    class Meta:
-        unique_together = ('room', 'user',)
-
     def __str__(self):
-        return self.user.email + ' answer in room: ' + self.room.room_code
+        return self.guest_room_relation.user.email + ' answer in room: ' + (
+            self.guest_room_relation.room_guest.room_code)
 
 
 class GuestRoomRelation(models.Model):
@@ -141,4 +139,4 @@ class GuestRoomRelation(models.Model):
 
     def __str__(self):
         return '{0} {1} is a guest in this room: {2} {3}'.format(
-            self.guest.id, self.guest.email, self.room_guest.id, self.room_guest.title)
+            self.user.id, self.user.email, self.room_guest.id, self.room_guest.title)

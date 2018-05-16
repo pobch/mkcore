@@ -63,8 +63,16 @@ class ListRoomAnswers(generics.ListCreateAPIView):
     queryset = RoomAnswer.objects.all()
     serializer_class = RoomAnswerSerializer
 
-    def perform_create(self, serializer):
-        serializer.save(user=self.request.user)
+    def create(self, request, *args, **kwargs):
+        guestRoomRelation_obj = get_object_or_404(GuestRoomRelation.objects.all(),
+            user=request.user,
+            room_guest=request.data.pop('room', 0))
+        request.data['guest_room_relation'] = guestRoomRelation_obj.id
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        self.perform_create(serializer)
+        headers = self.get_success_headers(serializer.data)
+        return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
 
 
 class DetailRoomAnswer(generics.RetrieveAPIView):
@@ -73,13 +81,14 @@ class DetailRoomAnswer(generics.RetrieveAPIView):
 
     def get_object(self):
         queryset = self.get_queryset()
-        filterField = {
-            'room': get_object_or_404(Room.objects.all(), id=self.kwargs['room']),
+        filter_for_GuestRoomRelation = {
+            'room_guest': get_object_or_404(Room.objects.all(), id=self.kwargs['room']),
             'user': self.request.user
         }
-        obj = get_object_or_404(queryset, **filterField)
-        self.check_object_permissions(self.request, obj)
-        return obj
+        guestRoomRelation_obj = get_object_or_404(GuestRoomRelation.objects.all(), **filter_for_GuestRoomRelation)
+        roomAnswer_obj = get_object_or_404(queryset, guest_room_relation=guestRoomRelation_obj)
+        self.check_object_permissions(self.request, roomAnswer_obj)
+        return roomAnswer_obj
 
 
 class JoinRoom(views.APIView):
@@ -118,8 +127,8 @@ class LeaveRoom(views.APIView):
         guest_room_relation_obj = get_object_or_404(GuestRoomRelation, user=guest_obj, room_guest=room_obj)
         guest_room_relation_obj.delete()
         ##### Work around (Temp) ######
-        room_answer_obj = get_object_or_404(RoomAnswer, user=guest_obj, room=room_obj)
-        room_answer_obj.delete()
+        # room_answer_obj = get_object_or_404(RoomAnswer, user=guest_obj, room=room_obj)
+        # room_answer_obj.delete()
         ###############################
         return Response('Leave success', status=status.HTTP_200_OK)
 
