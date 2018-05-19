@@ -5,7 +5,8 @@ from rest_framework.permissions import IsAuthenticated, AllowAny
 from django.shortcuts import get_object_or_404
 
 from core.models import User, Room, RoomAnswer, UserProfile, GuestRoomRelation
-from api.serializers import UserSerializer, UserProfileSerializer, RoomSerializer, RoomAnswerSerializer
+from api.serializers import (UserSerializer, UserProfileSerializer, RoomSerializer,
+    RoomAnswerSerializer, GuestRoomRelationSerializer)
 from api.permissions import IsOwnerForUserModel, IsOwner, IsOwnerOrGuest
 
 
@@ -46,11 +47,21 @@ class ListRooms(generics.ListCreateAPIView):
         if query == 'owner':
             return Room.objects.filter(user=user).order_by('-created_at')
         if query == 'guest':
-            return Room.objects.filter(guests=user).order_by('-guestroomrelation__join_date')
+            return Room.objects.filter(guests=user, guestroomrelation__accepted=True) \
+                .order_by('-guestroomrelation__accept_date')
         return Room.objects.all()
 
     def perform_create(self, serializer):
         serializer.save(user=self.request.user)
+
+
+class ListPendingRooms(generics.ListAPIView):
+    queryset = GuestRoomRelation.objects.all()
+    serializer_class = GuestRoomRelationSerializer
+
+    def get_queryset(self):
+        user = self.request.user
+        return GuestRoomRelation.objects.filter(user=user, accepted=False).order_by('-request_date')
 
 
 class DetailRoom(generics.RetrieveUpdateDestroyAPIView):
@@ -109,9 +120,11 @@ class JoinRoom(views.APIView):
         # serializer = GuestRoomRelationSerializer(data=data)
         # serializer.is_valid(raise_exception=True)
         # serializer.save()
-        guest_room_relation_obj = GuestRoomRelation.objects.get_or_create(user=guest_obj, room_guest=room_obj)
-        room_serialize = RoomSerializer(room_obj)
-        return Response(room_serialize.data)
+        guest_room_relation_obj, created = GuestRoomRelation.objects \
+            .get_or_create(user=guest_obj, room_guest=room_obj)
+        # room_serialize = RoomSerializer(room_obj)
+        # return Response(room_serialize.data)
+        return Response('Room joined, wait for acceptance of the owner', status=status.HTTP_201_CREATED)
 
 
 class LeaveRoom(views.APIView):

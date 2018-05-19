@@ -85,3 +85,11 @@ class UserSerializer(serializers.ModelSerializer):
             instance.set_password(password)
         instance.save()
         return instance
+
+
+class GuestRoomRelationSerializer(serializers.ModelSerializer):
+    room_title = serializers.CharField(source='room_guest.title', read_only=True)
+
+    class Meta:
+        model = GuestRoomRelation
+        fields = '__all__'

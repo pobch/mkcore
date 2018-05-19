@@ -132,7 +132,9 @@ class RoomAnswer(models.Model):
 class GuestRoomRelation(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE) # guest user
     room_guest = models.ForeignKey(Room, on_delete=models.CASCADE)
-    join_date = models.DateTimeField(null=False, auto_now_add=True)
+    request_date = models.DateTimeField(null=False, auto_now_add=True)
+    accepted = models.BooleanField(null=False, default=False)
+    accept_date = models.DateTimeField(null=True, blank=True)
 
     class Meta:
         unique_together = ('user', 'room_guest',)

@@ -21,6 +21,7 @@ urlpatterns = [
 
     path('rooms/', base.ListRooms.as_view()),
     path('rooms/<int:pk>/', base.DetailRoom.as_view(), name='room-detail'),
+    path('rooms/pending/', base.ListPendingRooms.as_view()),
     path('rooms/join/', base.JoinRoom.as_view()),
     path('rooms/unjoin/', base.LeaveRoom.as_view()),
     path('answers/', base.ListRoomAnswers.as_view()),
