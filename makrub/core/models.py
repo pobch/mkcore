@@ -126,19 +126,19 @@ class RoomAnswer(models.Model):
 
     def __str__(self):
         return self.guest_room_relation.user.email + ' answer in room: ' + (
-            self.guest_room_relation.room_guest.room_code)
+            self.guest_room_relation.room.room_code)
 
 
 class GuestRoomRelation(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE) # guest user
-    room_guest = models.ForeignKey(Room, on_delete=models.CASCADE)
+    room = models.ForeignKey(Room, on_delete=models.CASCADE)
     request_date = models.DateTimeField(null=False, auto_now_add=True)
     accepted = models.BooleanField(null=False, default=False)
     accept_date = models.DateTimeField(null=True, blank=True)
 
     class Meta:
-        unique_together = ('user', 'room_guest',)
+        unique_together = ('user', 'room',)
 
     def __str__(self):
         return '{0} {1} is a guest in this room: {2} {3}'.format(
-            self.user.id, self.user.email, self.room_guest.id, self.room_guest.title)
+            self.user.id, self.user.email, self.room.id, self.room.title)

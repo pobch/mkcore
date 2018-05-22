@@ -32,7 +32,7 @@ class RoomSerializer(serializers.ModelSerializer):
 class RoomAnswerSerializer(serializers.ModelSerializer):
     # user = serializers.PrimaryKeyRelatedField(queryset=User.objects.all())
     # user_str = serializers.StringRelatedField(source='user')
-    room = serializers.PrimaryKeyRelatedField(source='guest_room_relation.room_guest', read_only=True)
+    room = serializers.PrimaryKeyRelatedField(source='guest_room_relation.room', read_only=True)
 
     class Meta:
         fields = '__all__'
@@ -88,7 +88,10 @@ class UserSerializer(serializers.ModelSerializer):
 
 
 class GuestRoomRelationSerializer(serializers.ModelSerializer):
-    room_title = serializers.CharField(source='room_guest.title', read_only=True)
+    room_title = serializers.CharField(source='room.title', read_only=True)
+    user_email = serializers.EmailField(source='user.email', read_only=True)
+    user_first_name = serializers.CharField(source='user.first_name', read_only=True)
+    user_last_name = serializers.CharField(source='user.last_name', read_only=True)
 
     class Meta:
         model = GuestRoomRelation

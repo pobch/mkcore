@@ -64,6 +64,19 @@ class ListPendingRooms(generics.ListAPIView):
         return GuestRoomRelation.objects.filter(user=user, accepted=False).order_by('-request_date')
 
 
+class ListJoinRequests(generics.ListAPIView):
+    queryset = GuestRoomRelation.objects.all()
+    serializer_class = GuestRoomRelationSerializer
+
+    def get_queryset(self):
+        return GuestRoomRelation.objects.filter(accepted=False, room=self.kwargs['room_id'])
+
+
+class DetailJoinRequest(generics.RetrieveUpdateDestroyAPIView):
+    queryset = GuestRoomRelation.objects.all()
+    serializer_class = GuestRoomRelationSerializer
+
+
 class DetailRoom(generics.RetrieveUpdateDestroyAPIView):
     queryset = Room.objects.all()
     serializer_class = RoomSerializer
@@ -77,7 +90,7 @@ class ListRoomAnswers(generics.ListCreateAPIView):
     def create(self, request, *args, **kwargs):
         guestRoomRelation_obj = get_object_or_404(GuestRoomRelation.objects.all(),
             user=request.user,
-            room_guest=request.data.pop('room', 0))
+            room=request.data.pop('room', 0))
         request.data['guest_room_relation'] = guestRoomRelation_obj.id
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
@@ -93,7 +106,7 @@ class DetailRoomAnswer(generics.RetrieveAPIView):
     def get_object(self):
         queryset = self.get_queryset()
         filter_for_GuestRoomRelation = {
-            'room_guest': get_object_or_404(Room.objects.all(), id=self.kwargs['room']),
+            'room': get_object_or_404(Room.objects.all(), id=self.kwargs['room']),
             'user': self.request.user
         }
         guestRoomRelation_obj = get_object_or_404(GuestRoomRelation.objects.all(), **filter_for_GuestRoomRelation)
@@ -116,12 +129,12 @@ class JoinRoom(views.APIView):
             filter_keywords[field] = request.data.get(field, '')
         room_obj = get_object_or_404(Room.objects.all(), **filter_keywords)
         guest_obj = request.user
-        # data = {'user': guest_obj.id, 'room_guest': room_obj.id}
+        # data = {'user': guest_obj.id, 'room': room_obj.id}
         # serializer = GuestRoomRelationSerializer(data=data)
         # serializer.is_valid(raise_exception=True)
         # serializer.save()
         guest_room_relation_obj, created = GuestRoomRelation.objects \
-            .get_or_create(user=guest_obj, room_guest=room_obj)
+            .get_or_create(user=guest_obj, room=room_obj)
         # room_serialize = RoomSerializer(room_obj)
         # return Response(room_serialize.data)
         return Response('Room joined, wait for acceptance of the owner', status=status.HTTP_201_CREATED)
@@ -137,7 +150,7 @@ class LeaveRoom(views.APIView):
         """
         room_obj = get_object_or_404(Room.objects.all(), id=request.data.get('room_id'))
         guest_obj = request.user
-        guest_room_relation_obj = get_object_or_404(GuestRoomRelation, user=guest_obj, room_guest=room_obj)
+        guest_room_relation_obj = get_object_or_404(GuestRoomRelation, user=guest_obj, room=room_obj)
         guest_room_relation_obj.delete()
         ##### Work around (Temp) ######
         # room_answer_obj = get_object_or_404(RoomAnswer, user=guest_obj, room=room_obj)
