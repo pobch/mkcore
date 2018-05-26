@@ -45,7 +45,7 @@ class ListRooms(generics.ListCreateAPIView):
         user = self.request.user
         query = self.request.query_params.get('query', None)
         if query == 'owner':
-            return Room.objects.filter(user=user).order_by('-created_at')
+            return Room.objects.filter(user=user).order_by('-published_at', '-created_at')
         if query == 'guest':
             return Room.objects.filter(guests=user, guestroomrelation__accepted=True) \
                 .order_by('-guestroomrelation__accept_date')
@@ -127,7 +127,7 @@ class JoinRoom(views.APIView):
         filter_keywords = {}
         for field in ['room_code', 'room_password']:
             filter_keywords[field] = request.data.get(field, '')
-        room_obj = get_object_or_404(Room.objects.all(), **filter_keywords)
+        room_obj = get_object_or_404(Room.objects.all(), **filter_keywords, status='active')
         guest_obj = request.user
         # data = {'user': guest_obj.id, 'room': room_obj.id}
         # serializer = GuestRoomRelationSerializer(data=data)

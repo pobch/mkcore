@@ -105,13 +105,14 @@ class Room(models.Model):
     room_code = models.CharField(max_length=20, unique=True, blank=False, null=False)
     room_password = models.CharField(max_length=20, blank=True, null=False)
     instructor_name = models.CharField(max_length=200, blank=False, null=False)
-    survey = JSONField(null=True)
+    survey = JSONField(null=True, blank=True)
     start_at = models.DateTimeField(blank=True, null=True)
     end_at = models.DateTimeField(blank=True, null=True)
     image_url = models.URLField(blank=True, null=False) # this is CharField
     status = models.CharField(max_length=10, choices=STATUS_CHOICES, default='draft', null=False)
     created_at = models.DateTimeField(auto_now_add=True, null=False)
     updated_at = models.DateTimeField(auto_now=True, null=False)
+    published_at = models.DateTimeField(null=True, blank=True)
 
     def __str__(self):
         return self.room_code + ':' + self.title
