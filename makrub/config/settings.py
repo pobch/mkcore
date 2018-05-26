@@ -10,16 +10,35 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/2.0/ref/settings/
 """
 
+import sys
 import os
 import datetime
 import dotenv
+import requests
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
-dotenv_file = os.path.join(BASE_DIR, '.env')
-if os.path.isfile(dotenv_file):
-    dotenv.read_dotenv(BASE_DIR)
+if os.environ.get('VAULT_TOKEN') is not None and os.environ.get('VAULT_TOKEN') != '':
+    config_url = 'https://vault.studiotwist.co/v1/secret/data/makrub-%s/mkcore' % 'dev'
+    res = requests.get(config_url, headers={"X-VAULT-TOKEN": os.environ['VAULT_TOKEN']})
+
+    if res.status_code != 200:
+        sys.exit('Error response %s: %s' % (res.status_code, res.text))
+
+    config = res.json()['data']['data']['config']
+
+    for c in config.splitlines():
+        values = c.split('=')
+
+        if len(values) == 2:
+            os.environ[values[0]] = values[1]
+
+else:
+    dotenv_file = os.path.join(BASE_DIR, '.env')
+
+    if os.path.isfile(dotenv_file):
+        dotenv.read_dotenv(BASE_DIR)
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/2.0/howto/deployment/checklist/

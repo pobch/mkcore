@@ -2,14 +2,17 @@ FROM python:3.6-alpine as base
 MAINTAINER Metz Charusasi "metz@studiotwist.co"
 
 WORKDIR /app
-ADD Pipfile /app
-ADD Pipfile.lock /app
 
 RUN apk add --no-cache --virtual .build-deps \
-  build-base postgresql-dev libffi-dev linux-headers \
-    && pip install uwsgi pipenv \
-    && pipenv install --system \
-    && find /usr/local \
+        build-base postgresql-dev libffi-dev linux-headers
+
+RUN pip install uwsgi pipenv
+
+ADD Pipfile /app
+ADD Pipfile.lock /app
+RUN pipenv install --system
+
+RUN find /usr/local \
         \( -type d -a -name test -o -name tests \) \
         -o \( -type f -a -name '*.pyc' -o -name '*.pyo' \) \
         -exec rm -rf '{}' + \
