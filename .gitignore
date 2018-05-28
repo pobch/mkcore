@@ -57,6 +57,7 @@ otp/
 
 # Secret
 .env
+.env*
 .vscode
 
 # Text backup files

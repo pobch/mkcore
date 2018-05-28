@@ -2,6 +2,7 @@ image: docker:dind
 
 stages:
   - build
+  - deploy
 
 build_api:
   stage: build
@@ -19,3 +20,16 @@ build_api:
     - export IMAGE_TAG=$(if [ ! -z "$CI_COMMIT_TAG" ]; then echo "$CI_COMMIT_TAG"; else echo "latest"; fi)
     - docker build -t $CI_REGISTRY_IMAGE:$IMAGE_TAG .
     - docker push $CI_REGISTRY_IMAGE:$IMAGE_TAG
+
+deploy_dev:
+  stage: deploy
+  script:
+    - apk add --update curl
+    - curl
+        --request POST
+        --form "token=$DEPLOY_TOKEN"
+        --form "variables[TRIGGER_NAME]=mkcore"
+        --form "ref=develop"
+        https://gitlab.studiotwist.co/api/v4/projects/41/trigger/pipeline
+  only:
+    - develop
