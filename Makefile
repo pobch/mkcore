@@ -2,7 +2,7 @@ DEPLOY_HOST = app-1.studiotwist.co
 
 .PHONY:
 build:
-	sudo docker build -t mkcore .
+	sudo docker build -t makrub/mkcore .
 
 dev:
 	sudo docker run \
