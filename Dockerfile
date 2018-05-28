@@ -26,6 +26,8 @@ RUN find /usr/local \
     && apk add --virtual .rundeps $runDeps \
     && apk del build-base && rm -rf /var/cache/apk/*
 
+ADD . /app
+
 EXPOSE 8000
 # CMD ["python", "makrub/manage.py", "runserver", "0.0.0.0:8000"]
 CMD ["/usr/local/bin/uwsgi", "--http", ":8000", "--wsgi-file", "/app/makrub/config/wsgi.py", "--py-autoreload", "1"]
