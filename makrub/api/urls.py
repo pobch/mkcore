@@ -27,7 +27,9 @@ urlpatterns = [
     path('rooms/join/', base.JoinRoom.as_view()),
     path('rooms/unjoin/', base.LeaveRoom.as_view()),
     path('answers/', base.ListRoomAnswers.as_view()),
-    path('answers/<int:room>/', base.DetailRoomAnswer.as_view(), name='answer-detail'),
+    path('answers/<int:pk>/', base.DetailRoomAnswer.as_view(), name='answer-detail'),
+    path('answers/byroomid/<int:room>/', base.DetailRoomAnswerByRoomId.as_view()),
+    path('guestroomrelation/', base.ListGuestRoomRelation.as_view()),
 
     # djoser
     # re_path(r'^view/$', djoser_views.UserView.as_view(), name='user-view'),

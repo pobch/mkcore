@@ -105,7 +105,7 @@ class Room(models.Model):
     room_code = models.CharField(max_length=20, unique=True, blank=False, null=False)
     room_password = models.CharField(max_length=20, blank=True, null=False)
     instructor_name = models.CharField(max_length=200, blank=False, null=False)
-    survey = JSONField(null=True, blank=True)
+    survey = JSONField(null=False, blank=True, default=list)
     start_at = models.DateTimeField(blank=True, null=True)
     end_at = models.DateTimeField(blank=True, null=True)
     image_url = models.URLField(blank=True, null=False) # this is CharField
@@ -122,8 +122,9 @@ class RoomAnswer(models.Model):
     guest_room_relation = models.OneToOneField('GuestRoomRelation',
         related_name='answer_detail', null=True, on_delete=models.CASCADE)
 
-    answer = JSONField(null=True)
+    answer = JSONField(null=False, blank=True, default=list)
     created_at = models.DateTimeField(auto_now_add=True, null=False)
+    submitted_at = models.DateTimeField(null=True)
 
     def __str__(self):
         return self.guest_room_relation.user.email + ' answer in room: ' + (

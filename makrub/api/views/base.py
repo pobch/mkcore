@@ -99,7 +99,12 @@ class ListRoomAnswers(generics.ListCreateAPIView):
         return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
 
 
-class DetailRoomAnswer(generics.RetrieveAPIView):
+class DetailRoomAnswer(generics.RetrieveUpdateDestroyAPIView):
+    queryset = RoomAnswer.objects.all()
+    serializer_class = RoomAnswerSerializer
+
+
+class DetailRoomAnswerByRoomId(generics.RetrieveAPIView):
     queryset = RoomAnswer.objects.all()
     serializer_class = RoomAnswerSerializer
 
@@ -157,6 +162,11 @@ class LeaveRoom(views.APIView):
         # room_answer_obj.delete()
         ###############################
         return Response('Leave success', status=status.HTTP_200_OK)
+
+
+class ListGuestRoomRelation(generics.ListCreateAPIView):
+    queryset = GuestRoomRelation.objects.all()
+    serializer_class = GuestRoomRelationSerializer
 
 
 # class UserLogoutAllView(APIView):

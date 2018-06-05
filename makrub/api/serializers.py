@@ -33,6 +33,7 @@ class RoomAnswerSerializer(serializers.ModelSerializer):
     # user = serializers.PrimaryKeyRelatedField(queryset=User.objects.all())
     # user_str = serializers.StringRelatedField(source='user')
     room = serializers.PrimaryKeyRelatedField(source='guest_room_relation.room', read_only=True)
+    guest = serializers.PrimaryKeyRelatedField(source='guest_room_relation.user', read_only=True)
 
     class Meta:
         fields = '__all__'
@@ -42,7 +43,7 @@ class RoomAnswerSerializer(serializers.ModelSerializer):
 class UserSerializer(serializers.ModelSerializer):
     # serializers.PrimaryKeyRelatedField(read_only=True, many=True)
     profile = UserProfileSerializer(read_only=True)
-    answers = serializers.HyperlinkedRelatedField(view_name='answer-detail', many=True, read_only=True, allow_null=True)
+    # answers = serializers.HyperlinkedRelatedField(view_name='answer-detail', many=True, read_only=True, allow_null=True)
     # answers = RoomAnswerSerializer(many=True, read_only=True)
     # # StringRelatedField cannot set 'read_only' and 'required' arguments. Use SlugRelatedField instead :
     rooms_owner = serializers.SlugRelatedField(slug_field='title', many=True, read_only=True)
@@ -60,15 +61,16 @@ class UserSerializer(serializers.ModelSerializer):
 
     def validate(self, data):
         super().validate(data)
-        user = User(**data)
-        password = data.get('password') # get return None by default in case of non-exist key (never throw Error)
-        errors = dict() # keys in this dict will be keys in JSON response in case an error occurs
-        try:
-            validators.validate_password(password=password, user=user)
-        except exceptions.ValidationError as e:
-            errors['password'] = list(e.messages)
-        if errors:
-            raise serializers.ValidationError(errors) # add to JSON
+        if self.context['request'].method == 'POST':
+            user = User(**data)
+            password = data.get('password') # get return None by default in case of non-exist key (never throw Error)
+            errors = dict() # keys in this dict will be keys in JSON response in case an error occurs
+            try:
+                validators.validate_password(password=password, user=user)
+            except exceptions.ValidationError as e:
+                errors['password'] = list(e.messages)
+            if errors:
+                raise serializers.ValidationError(errors) # add to JSON
         return data
 
     def create(self, validated_data):
@@ -92,6 +94,7 @@ class GuestRoomRelationSerializer(serializers.ModelSerializer):
     user_email = serializers.EmailField(source='user.email', read_only=True)
     user_first_name = serializers.CharField(source='user.first_name', read_only=True)
     user_last_name = serializers.CharField(source='user.last_name', read_only=True)
+    answer_submitted_at = serializers.DateTimeField(source='answer_detail.submitted_at', read_only=True)
 
     class Meta:
         model = GuestRoomRelation
