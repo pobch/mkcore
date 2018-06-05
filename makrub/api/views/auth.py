@@ -30,7 +30,7 @@ class Register(APIView):
     Register a new user
     """
     def post(self, request, format='json'):
-        serializer = serializers.UserSerializer(data=request.data)
+        serializer = serializers.UserSerializer(data=request.data, context={'request': request})
 
         if serializer.is_valid(raise_exception=True):
             user = serializer.save()
@@ -53,8 +53,8 @@ class Register(APIView):
 
         return Response(status=status.HTTP_422_UNPROCESSABLE_ENTITY)
 
-    def get_serializer(self):
-        return serializers.UserSerializer()
+    # def get_serializer(self):
+    #     return serializers.UserSerializer()
 
 
 class Confirmation(APIView):

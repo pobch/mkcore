@@ -113,6 +113,7 @@ class Room(models.Model):
     created_at = models.DateTimeField(auto_now_add=True, null=False)
     updated_at = models.DateTimeField(auto_now=True, null=False)
     published_at = models.DateTimeField(null=True, blank=True)
+    have_survey_when_published = models.BooleanField(null=False, blank=True, default=True)
 
     def __str__(self):
         return self.room_code + ':' + self.title
@@ -123,7 +124,8 @@ class RoomAnswer(models.Model):
         related_name='answer_detail', null=True, on_delete=models.CASCADE)
 
     answer = JSONField(null=False, blank=True, default=list)
-    created_at = models.DateTimeField(auto_now_add=True, null=False)
+    first_saved_at = models.DateTimeField(auto_now_add=True, null=False)
+    submitted = models.BooleanField(null=False, default=False)
     submitted_at = models.DateTimeField(null=True)
 
     def __str__(self):

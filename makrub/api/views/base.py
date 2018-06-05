@@ -49,6 +49,10 @@ class ListRooms(generics.ListCreateAPIView):
         if query == 'guest':
             return Room.objects.filter(guests=user, guestroomrelation__accepted=True) \
                 .order_by('-guestroomrelation__accept_date')
+            # bcoz the field which is ordered by is reverse relation (list type), so if there are
+            #   multiple values in the list, the result will include duplicate items without raising error!!!
+            #   see 'Note' section on https://docs.djangoproject.com/en/2.0/ref/models/querysets/#order-by
+
         return Room.objects.all()
 
     def perform_create(self, serializer):
@@ -97,6 +101,15 @@ class ListRoomAnswers(generics.ListCreateAPIView):
         self.perform_create(serializer)
         headers = self.get_success_headers(serializer.data)
         return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
+
+
+class ListRoomAnswersOfMe(generics.ListAPIView):
+    queryset = RoomAnswer.objects.all()
+    serializer_class = RoomAnswerSerializer
+
+    def get_queryset(self):
+        user = self.request.user
+        return RoomAnswer.objects.filter(guest_room_relation__user=user)
 
 
 class DetailRoomAnswer(generics.RetrieveUpdateDestroyAPIView):

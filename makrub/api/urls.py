@@ -27,6 +27,7 @@ urlpatterns = [
     path('rooms/join/', base.JoinRoom.as_view()),
     path('rooms/unjoin/', base.LeaveRoom.as_view()),
     path('answers/', base.ListRoomAnswers.as_view()),
+    path('answers/me/', base.ListRoomAnswersOfMe.as_view()),
     path('answers/<int:pk>/', base.DetailRoomAnswer.as_view(), name='answer-detail'),
     path('answers/byroomid/<int:room>/', base.DetailRoomAnswerByRoomId.as_view()),
     path('guestroomrelation/', base.ListGuestRoomRelation.as_view()),
