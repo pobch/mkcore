@@ -61,7 +61,7 @@ class UserSerializer(serializers.ModelSerializer):
 
     def validate(self, data):
         super().validate(data)
-        if self.context['request'].method == 'POST':
+        if not self.partial: # for 'POST' and 'PUT' method
             user = User(**data)
             password = data.get('password') # get return None by default in case of non-exist key (never throw Error)
             errors = dict() # keys in this dict will be keys in JSON response in case an error occurs
@@ -69,7 +69,18 @@ class UserSerializer(serializers.ModelSerializer):
                 validators.validate_password(password=password, user=user)
             except exceptions.ValidationError as e:
                 errors['password'] = list(e.messages)
-            if errors:
+        else: # for 'PATCH' method
+            user = User(**data)
+            password = data.get('password')
+            errors = dict()
+            if password is None: # a user dont want to change password
+                return data
+            else: # a user want to change password
+                try:
+                    validators.validate_password(password=password, user=user)
+                except exceptions.ValidationError as e:
+                    errors['password'] = list(e.messages)
+        if errors:
                 raise serializers.ValidationError(errors) # add to JSON
         return data
 
