@@ -73,7 +73,12 @@ class ListJoinRequests(generics.ListAPIView):
     serializer_class = GuestRoomRelationSerializer
 
     def get_queryset(self):
-        return GuestRoomRelation.objects.filter(accepted=False, room=self.kwargs['room_id'])
+
+        # # Filter only accepted guests
+        # return GuestRoomRelation.objects.filter(accepted=False, room=self.kwargs['room_id'])
+
+        # # Backend does not filter 'accepted' field, let the frontend do the filter logic
+        return GuestRoomRelation.objects.filter(room=self.kwargs['room_id'])
 
 
 class DetailJoinRequest(generics.RetrieveUpdateDestroyAPIView):
