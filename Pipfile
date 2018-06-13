@@ -1,12 +1,9 @@
 [[source]]
-
 url = "https://pypi.python.org/simple"
 verify_ssl = true
 name = "pypi"
 
-
 [packages]
-
 django = "*"
 djangorestframework = "*"
 "psycopg2" = "==2.7.3"
@@ -20,9 +17,5 @@ pylint-django = "*"
 django-cors-headers = "*"
 dj-database-url = "*"
 requests = "*"
-django-rest-auth = "*"
-django-allauth = "*"
-
 
 [dev-packages]
-

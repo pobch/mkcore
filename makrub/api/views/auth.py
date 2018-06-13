@@ -13,15 +13,6 @@ from core.models import User
 
 from api import serializers
 
-# django-rest-auth social login:
-from allauth.socialaccount.providers.facebook.views import FacebookOAuth2Adapter
-from rest_auth.registration.views import SocialLoginView
-
-
-# django-rest-auth facebook login:
-class FacebookLogin(SocialLoginView):
-    adapter_class = FacebookOAuth2Adapter
-
 
 class CheckMe(APIView):
     """

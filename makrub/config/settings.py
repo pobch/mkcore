@@ -63,14 +63,6 @@ INSTALLED_APPS = [
 
     'corsheaders',
     'rest_framework',
-    'rest_auth',
-    # django-allauth installation settings:
-    'django.contrib.sites',
-    'allauth',
-    'allauth.account',
-    'allauth.socialaccount',
-    'allauth.socialaccount.providers.facebook',
-
     # 'django_otp',
     # 'django_otp.plugins.otp_totp',
     # 'django_otp.plugins.otp_static',
@@ -97,12 +89,7 @@ ROOT_URLCONF = 'config.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [
-            # for telling original django's password-reset form to use my custom e-mail content instead of
-            #   its original which is in
-            #   <pipenv's venv dir>/lib/python3.6/site-packages/django/contrib/admin/templates
-            os.path.join(BASE_DIR, 'templates'),
-            ],
+        'DIRS': [],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -177,12 +164,32 @@ STATIC_URL = '/static/'
 
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 
-
 # add a new custom user model
 AUTH_USER_MODEL = 'core.User'
 
+# tell django rest framework that we're gonna use jwt for authen
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': (
+        'rest_framework_jwt.authentication.JSONWebTokenAuthentication',
+        'rest_framework.authentication.SessionAuthentication',
+        'rest_framework.authentication.BasicAuthentication',
+    ),
+}
 
-# SMTP server for sending e-mail
+# Enables django-rest-auth to use JWT tokens instead of regular tokens.
+# REST_USE_JWT = True
+
+# djangorestframework-jwt config:
+JWT_AUTH = {
+    'JWT_EXPIRATION_DELTA': datetime.timedelta(days=30),
+    'JWT_ALLOW_REFRESH': True,
+    'JWT_REFRESH_EXPIRATION_DELTA': datetime.timedelta(days=365),
+    # 'JWT_GET_USER_SECRET_KEY': 'core.models.jwt_get_secret_key',
+    # 'JWT_PAYLOAD_HANDLER': 'otp.utils.jwt_otp_payload',
+}
+
+
+# Email
 # in development environment, do this:
 # 1. python -m smtpd -n -c DebuggingServer localhost:1025
 # 2. EMAIL_HOST = 'localhost'
@@ -195,7 +202,7 @@ EMAIL_HOST_PASSWORD = os.environ.get('EMAIL_HOST_PASSWORD')
 EMAIL_USE_TLS = os.environ.get('EMAIL_USE_TLS', 'False').lower() == 'true'
 
 
-# auto append slash to url
+# Url
 APPEND_SLASH = True
 
 
@@ -209,71 +216,13 @@ CORS_ORIGIN_WHITELIST = (
 )
 
 
-############# django-rest-framework-jwt installation settings:
-# tell django-rest-framework that we're gonna use jwt for authen
-# django-rest-framework config:
-REST_FRAMEWORK = {
-    'DEFAULT_AUTHENTICATION_CLASSES': (
-        'rest_framework_jwt.authentication.JSONWebTokenAuthentication', # JWT
-        'rest_framework.authentication.SessionAuthentication',
-        'rest_framework.authentication.BasicAuthentication',
-    ),
-}
-
-
-############## django-rest-auth installation settings:
-# Enables django-rest-auth to use JWT tokens instead of regular tokens.
-REST_USE_JWT = True
-REST_AUTH_SERIALIZERS = {
-    # Use my custom user model instead of default django's user model :
-    'USER_DETAILS_SERIALIZER': 'api.serializers.UserSerializer',
-
-    # Use my custom password-reset serializer to add extra context (front-end domain)
-    #   to original django's password-reset form
-    'PASSWORD_RESET_SERIALIZER': 'api.serializers.CustomPasswordResetSerializer',
-}
-
-
-############# django-allauth installation settings:
-AUTHENTICATION_BACKENDS = (
-    # Needed to login by username in Django admin, regardless of `allauth`
-    'django.contrib.auth.backends.ModelBackend',
-
-    # `allauth` specific authentication methods, such as login by e-mail
-    'allauth.account.auth_backends.AuthenticationBackend',
-)
-SITE_ID = 1
-# config:
-ACCOUNT_AUTHENTICATED_LOGIN_REDIRECTS = False
-ACCOUNT_AUTHENTICATION_METHOD = 'email'
-ACCOUNT_EMAIL_REQUIRED = True
-ACCOUNT_EMAIL_CONFIRMATION_EXPIRE_DAYS = 1
-ACCOUNT_EMAIL_VERIFICATION = 'mandatory'
-ACCOUNT_USERNAME_REQUIRED = False
-ACCOUNT_USER_MODEL_USERNAME_FIELD = 'email'
-# Post-installation:
-# 1. Add a Site for your domain, matching settings.SITE_ID (django.contrib.sites app).
-# 2. For each OAuth based provider, add a Social App (socialaccount app).
-# 3. Fill in the site and the OAuth app credentials obtained from the provider.
-
-
-############ django-rest-framework-jwt config:
-JWT_AUTH = {
-    'JWT_EXPIRATION_DELTA': datetime.timedelta(days=30),
-    'JWT_ALLOW_REFRESH': True,
-    'JWT_REFRESH_EXPIRATION_DELTA': datetime.timedelta(days=365),
-    # 'JWT_GET_USER_SECRET_KEY': 'core.models.jwt_get_secret_key',
-    # 'JWT_PAYLOAD_HANDLER': 'otp.utils.jwt_otp_payload',
-}
-
-
-########### WhiteNoise for serving static files
+# WhiteNoise for serving static files
 # Simplified static file serving.
 # https://warehouse.python.org/project/whitenoise/
 STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
 
-########### Heroku: Update database configuration from $DATABASE_URL.
+# Heroku: Update database configuration from $DATABASE_URL.
 import dj_database_url
 
 db_from_env = dj_database_url.config(conn_max_age=600)

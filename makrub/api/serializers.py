@@ -3,11 +3,6 @@ from core.models import User, UserProfile, Room, RoomAnswer, GuestRoomRelation
 from django.core import exceptions
 import django.contrib.auth.password_validation as validators
 
-# for customize (overriding) django-rest-auth serializer:
-from rest_auth.serializers import PasswordResetSerializer as RestAuthPwdResetSerializer
-from django.conf import settings
-import os
-
 
 class UserProfileSerializer(serializers.ModelSerializer):
     class Meta:
@@ -48,19 +43,13 @@ class RoomAnswerSerializer(serializers.ModelSerializer):
 class UserSerializer(serializers.ModelSerializer):
     # serializers.PrimaryKeyRelatedField(read_only=True, many=True)
     profile = UserProfileSerializer(read_only=True)
-    # answers = serializers.HyperlinkedRelatedField(view_name='answer-detail',many=True,read_only=True,allow_null=True)
+    # answers = serializers.HyperlinkedRelatedField(view_name='answer-detail', many=True, read_only=True, allow_null=True)
     # answers = RoomAnswerSerializer(many=True, read_only=True)
     # # StringRelatedField cannot set 'read_only' and 'required' arguments. Use SlugRelatedField instead :
     rooms_owner = serializers.SlugRelatedField(slug_field='title', many=True, read_only=True)
-    rooms_owner_links = serializers.HyperlinkedRelatedField(
-        view_name='room-detail', source='rooms_owner',
-        many=True, read_only=True, allow_null=True
-        )
+    rooms_owner_links = serializers.HyperlinkedRelatedField(view_name='room-detail', source='rooms_owner', many=True, read_only=True, allow_null=True)
     rooms_guest = serializers.SlugRelatedField(slug_field='title', many=True, read_only=True)
-    rooms_guest_links = serializers.HyperlinkedRelatedField(
-        view_name='room-detail', source='rooms_guest',
-        many=True, read_only=True, allow_null=True
-        )
+    rooms_guest_links = serializers.HyperlinkedRelatedField(view_name='room-detail', source='rooms_guest', many=True, read_only=True, allow_null=True)
 
     class Meta:
         model = User
@@ -113,6 +102,7 @@ class UserSerializer(serializers.ModelSerializer):
 
 class GuestRoomRelationSerializer(serializers.ModelSerializer):
     room_title = serializers.CharField(source='room.title', read_only=True)
+    room_room_code = serializers.CharField(source='room.room_code', read_only=True)
     user_email = serializers.EmailField(source='user.email', read_only=True)
     user_first_name = serializers.CharField(source='user.first_name', read_only=True)
     user_last_name = serializers.CharField(source='user.last_name', read_only=True)
@@ -121,25 +111,3 @@ class GuestRoomRelationSerializer(serializers.ModelSerializer):
     class Meta:
         model = GuestRoomRelation
         fields = '__all__'
-
-
-# For customize django-rest-auth :
-# original django-rest-auth serializer (code copied from its github):
-class CustomPasswordResetSerializer(RestAuthPwdResetSerializer):
-    def save(self):
-        request = self.context.get('request')
-        # Set some values to trigger the send_email method.
-        opts = {
-            'use_https': request.is_secure(),
-            'from_email': getattr(settings, 'DEFAULT_FROM_EMAIL'),
-            'request': request,
-            ###### This is my custom code :
-            'extra_email_context': {
-                'FRONTEND_DOMAIN_PWDRESET': os.environ.get('FRONTEND_DOMAIN_PWDRESET', '127.0.0.1:8000'),
-            },
-            'html_email_template_name': 'registration/password_reset_email_html.html'
-            ###### End of my custom code
-        }
-
-        opts.update(self.get_email_options())
-        self.reset_form.save(**opts)
