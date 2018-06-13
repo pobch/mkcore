@@ -11,6 +11,9 @@ urlpatterns = [
     path('auth/login/refresh/', jwt_views.RefreshJSONWebToken.as_view(), name='auth_login_refresh'),
     path('auth/login/verify/', jwt_views.verify_jwt_token, name='auth_login_verify'),  # verify_jwt_token is a function
 
+    # django-rest-auth social login
+    path('rest-auth/facebook/', auth.FacebookLogin.as_view(), name='fb_login'),
+
     path('auth/register/', auth.Register.as_view(), name="auth_register"),
     path('auth/confirmation/', auth.Confirmation.as_view(), name='confirmation'),
     path('auth/check-me/', auth.CheckMe.as_view(), name="auth_check_me"),
