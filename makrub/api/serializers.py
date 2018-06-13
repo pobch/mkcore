@@ -113,7 +113,6 @@ class UserSerializer(serializers.ModelSerializer):
 
 class GuestRoomRelationSerializer(serializers.ModelSerializer):
     room_title = serializers.CharField(source='room.title', read_only=True)
-    room_room_code = serializers.CharField(source='room.room_code', read_only=True)
     user_email = serializers.EmailField(source='user.email', read_only=True)
     user_first_name = serializers.CharField(source='user.first_name', read_only=True)
     user_last_name = serializers.CharField(source='user.last_name', read_only=True)
