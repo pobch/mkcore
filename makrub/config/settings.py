@@ -229,3 +229,12 @@ import dj_database_url
 
 db_from_env = dj_database_url.config(conn_max_age=600)
 DATABASES['default'].update(db_from_env)
+
+
+######### djoser config:
+DJOSER = {
+    'PASSWORD_RESET_CONFIRM_URL': 'password/reset/confirm/{uid}/{token}',
+}
+# django-templated-mail config (for djoser's e-mail content):
+DOMAIN = '127.0.0.1:3000'
+SITE_NAME = 'Makrub.com'

@@ -21,6 +21,7 @@ django-cors-headers = "*"
 dj-database-url = "*"
 requests = "*"
 djoser = "*"
+django-templated-mail = "*"
 
 
 [dev-packages]
