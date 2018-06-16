@@ -126,21 +126,21 @@ DATABASES = {
 # https://docs.djangoproject.com/en/2.0/ref/settings/#auth-password-validators
 
 AUTH_PASSWORD_VALIDATORS = [
-    {
-        'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',
-    },
+    # {
+    #     'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',
+    # },
     {
         'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator',
         'OPTIONS': {
             'min_length': 4,
         }
     },
-    {
-        'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator',
-    },
-    {
-        'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
-    },
+    # {
+    #     'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator',
+    # },
+    # {
+    #     'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
+    # },
 ]
 
 
@@ -191,6 +191,7 @@ APPEND_SLASH = True
 # CORS_ORIGIN_ALLOW_ALL = True
 CORS_ORIGIN_WHITELIST = (
     'localhost:3000',
+    '127.0.0.1:3000',
     'localhost:8080',
     'mkcore-app.herokuapp.com',
     'dev.makrub.com',
@@ -233,8 +234,8 @@ DATABASES['default'].update(db_from_env)
 
 ######### djoser config:
 DJOSER = {
-    'PASSWORD_RESET_CONFIRM_URL': 'password/reset/confirm/{uid}/{token}',
+    'PASSWORD_RESET_CONFIRM_URL': 'password/forgot/confirm/{uid}/{token}',
 }
 # django-templated-mail config (for djoser's e-mail content):
-DOMAIN = '127.0.0.1:3000'
-SITE_NAME = 'Makrub.com'
+DOMAIN = os.environ.get('FRONTEND_DOMAIN', 'localhost:3000')
+SITE_NAME = os.environ.get('FRONTEND_SITE_NAME', 'Localhost.me')
