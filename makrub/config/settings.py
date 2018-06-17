@@ -239,3 +239,8 @@ DJOSER = {
 # django-templated-mail config (for djoser's e-mail content):
 DOMAIN = os.environ.get('FRONTEND_DOMAIN', 'localhost:3000')
 SITE_NAME = os.environ.get('FRONTEND_SITE_NAME', 'Localhost.me')
+
+
+######### My custom variable for user activation e-mail content:
+USER_ACTIVATION_CONFIRM_URL = 'signup/activate/confirm' # will + /{uid}/{token} later
+PROTOCOL_FOR_ACTIVATION_URL = 'http'

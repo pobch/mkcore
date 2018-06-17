@@ -9,7 +9,6 @@ name = "pypi"
 
 django = "*"
 djangorestframework = "*"
-"psycopg2" = "==2.7.3"
 gunicorn = "*"
 djangorestframework-jwt = "*"
 django-otp = "*"
@@ -22,6 +21,8 @@ dj-database-url = "*"
 requests = "*"
 djoser = "*"
 django-templated-mail = "*"
+"psycopg2" = "*"
+"psycopg2-binary" = "*"
 
 
 [dev-packages]
