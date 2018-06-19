@@ -82,4 +82,4 @@ class Confirmation(APIView):
 
             return Response('Thank you for your email confirmation')
         else:
-            return Response('Invalid confirmation link')
+            return Response('Invalid confirmation link', status=status.HTTP_400_BAD_REQUEST)
