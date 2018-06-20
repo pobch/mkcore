@@ -1,4 +1,6 @@
 # import uuid
+from django.utils import timezone # use this instead of python's datetime to avoid
+                        # RuntimeWarning: received a naive datetime while time zone support is active.
 from rest_framework import generics, status, views
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated, AllowAny
@@ -81,7 +83,31 @@ class ListJoinRequests(generics.ListAPIView):
         return GuestRoomRelation.objects.filter(room=self.kwargs['room_id'])
 
 
+class AcceptAllJoinReqsByRelationIds(views.APIView):
+    def post(self, request, format='json'):
+        """
+        receive json 'ids' which is a list of 'id' field of GuestRoomRelation model to filter rows by 'id'
+        then bulk update 'accepted' and 'accept_date' fields of filtered GuestRoomRelation rows
+        """
+        row_ids_to_update = request.data.get('ids', [])
+        try:
+            queryset_filtered = GuestRoomRelation.objects.filter(id__in=row_ids_to_update)
+            queryset_filtered.update(accepted=True, accept_date=timezone.now())
+            # DB already updated, then serialize to response in json:
+            serializer = GuestRoomRelationSerializer(queryset_filtered, many=True)
+        except:
+            return Response('Unexpected errors when accepting many join reqs', status=status.HTTP_400_BAD_REQUEST)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+
 class DetailJoinRequest(generics.RetrieveUpdateDestroyAPIView):
+    """
+    To accept each join req, frontend will send a json body below together with
+        row 'id' in URL to PATCH a GuestRoomRelation row of that 'id'
+        json body : { accepted: true, accept_date: new Date() }
+    To deny each join req, frontend will send a DELETE method together with row 'id' in URL
+        to DELETE a GuestRoomRelation row of that 'id'
+    """
     queryset = GuestRoomRelation.objects.all()
     serializer_class = GuestRoomRelationSerializer
 
