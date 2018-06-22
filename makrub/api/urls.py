@@ -36,6 +36,7 @@ urlpatterns = [
     path('answers/<int:pk>/', base.DetailRoomAnswer.as_view(), name='answer-detail'),
     path('answers/byroomid/<int:room>/', base.DetailRoomAnswerByRoomId.as_view()),
     path('guestroomrelation/', base.ListGuestRoomRelation.as_view()),
+    path('guestroomrelation/bulkcreate/', base.BulkCreateGuestRoomRelation.as_view()),
 
     # djoser official doc:
     path('djoser/', include('djoser.urls')),

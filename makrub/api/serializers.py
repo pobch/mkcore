@@ -1,7 +1,9 @@
 from rest_framework import serializers
-from core.models import User, UserProfile, Room, RoomAnswer, GuestRoomRelation
+from rest_framework_bulk import BulkSerializerMixin
 from django.core import exceptions
 import django.contrib.auth.password_validation as validators
+
+from core.models import User, UserProfile, Room, RoomAnswer, GuestRoomRelation
 
 
 class UserProfileSerializer(serializers.ModelSerializer):
@@ -108,6 +110,12 @@ class GuestRoomRelationSerializer(serializers.ModelSerializer):
     user_last_name = serializers.CharField(source='user.last_name', read_only=True)
     answer_submitted_at = serializers.DateTimeField(source='answer_detail.submitted_at', read_only=True)
 
+    class Meta:
+        model = GuestRoomRelation
+        fields = '__all__'
+
+
+class GuestRoomRelationBulkSerializer(BulkSerializerMixin, serializers.ModelSerializer):
     class Meta:
         model = GuestRoomRelation
         fields = '__all__'

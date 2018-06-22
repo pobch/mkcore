@@ -23,6 +23,7 @@ djoser = "*"
 django-templated-mail = "*"
 "psycopg2" = "*"
 "psycopg2-binary" = "*"
+djangorestframework-bulk = "*"
 
 
 [dev-packages]

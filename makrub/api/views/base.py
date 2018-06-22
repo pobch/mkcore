@@ -5,10 +5,11 @@ from rest_framework import generics, status, views
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated, AllowAny
 from django.shortcuts import get_object_or_404
+from rest_framework_bulk import BulkCreateAPIView
 
 from core.models import User, Room, RoomAnswer, UserProfile, GuestRoomRelation
 from api.serializers import (UserSerializer, UserProfileSerializer, RoomSerializer,
-    RoomAnswerSerializer, GuestRoomRelationSerializer)
+    RoomAnswerSerializer, GuestRoomRelationSerializer, GuestRoomRelationBulkSerializer)
 from api.permissions import IsOwnerForUserModel, IsOwner, IsOwnerOrGuest
 
 
@@ -211,6 +212,19 @@ class LeaveRoom(views.APIView):
 class ListGuestRoomRelation(generics.ListCreateAPIView):
     queryset = GuestRoomRelation.objects.all()
     serializer_class = GuestRoomRelationSerializer
+
+
+class BulkCreateGuestRoomRelation(BulkCreateAPIView):
+    """
+    Input: POST a list like this:
+        [{"user": <guest id>,"room": <room id>,"accepted": <true/false>,"accept_date"}, {...}, ...]
+    Return: a list of new created rows
+    Error When: an error will occurs if creating some elements in the list violates unique_together condition
+    Performance Note: each row created at different timestamp bcoz (as my guess) django-rest-framework-bulk
+        creates each row using loop, not using django's bulk_create()
+    """
+    queryset = GuestRoomRelation.objects.all()
+    serializer_class = GuestRoomRelationBulkSerializer
 
 
 # class UserLogoutAllView(APIView):
