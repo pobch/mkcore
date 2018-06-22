@@ -139,6 +139,7 @@ class GuestRoomRelation(models.Model):
     request_date = models.DateTimeField(null=False, auto_now_add=True)
     accepted = models.BooleanField(null=False, default=False)
     accept_date = models.DateTimeField(null=True, blank=True)
+    created_by_room_owner = models.BooleanField(null=False, default=False)
 
     class Meta:
         unique_together = ('user', 'room',)

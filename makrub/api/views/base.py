@@ -71,7 +71,7 @@ class ListPendingRooms(generics.ListAPIView):
         return GuestRoomRelation.objects.filter(user=user, accepted=False).order_by('-request_date')
 
 
-class ListJoinRequests(generics.ListAPIView):
+class ListJoinRequestsByRoomId(generics.ListAPIView):
     queryset = GuestRoomRelation.objects.all()
     serializer_class = GuestRoomRelationSerializer
 
@@ -117,6 +117,21 @@ class DetailRoom(generics.RetrieveUpdateDestroyAPIView):
     queryset = Room.objects.all()
     serializer_class = RoomSerializer
     permission_classes = (IsOwnerOrGuest,)
+
+
+class DetailRoomByRoomCode(generics.RetrieveAPIView):
+    queryset = Room.objects.all()
+    serializer_class = RoomSerializer
+
+    def get_object(self):
+        queryset = self.get_queryset()
+        filter_by = {
+            'room_code': self.request.query_params.get('room_code', None),
+            'user': self.request.user, # will search only owned room
+        }
+        room_obj = get_object_or_404(queryset, **filter_by)
+        self.check_object_permissions(self.request, room_obj)
+        return room_obj
 
 
 class ListRoomAnswers(generics.ListCreateAPIView):
@@ -217,7 +232,15 @@ class ListGuestRoomRelation(generics.ListCreateAPIView):
 class BulkCreateGuestRoomRelation(BulkCreateAPIView):
     """
     Input: POST a list like this:
-        [{"user": <guest id>,"room": <room id>,"accepted": <true/false>,"accept_date"}, {...}, ...]
+        [   {   "created_by_room_owner": true,
+                "user": <guest id>,
+                "room": <room id>,
+                "accepted": <true/false>,
+                "accept_date"
+            },
+            {...},
+            ...
+        ]
     Return: a list of new created rows
     Error When: an error will occurs if creating some elements in the list violates unique_together condition
     Performance Note: each row created at different timestamp bcoz (as my guess) django-rest-framework-bulk

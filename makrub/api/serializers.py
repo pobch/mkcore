@@ -115,7 +115,7 @@ class GuestRoomRelationSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 
-class GuestRoomRelationBulkSerializer(BulkSerializerMixin, serializers.ModelSerializer):
+class GuestRoomRelationBulkSerializer(BulkSerializerMixin, GuestRoomRelationSerializer):
     class Meta:
         model = GuestRoomRelation
         fields = '__all__'
