@@ -70,6 +70,7 @@ INSTALLED_APPS = [
 
     'core',
     'api',
+    'exporter',
     # 'otp',
 ]
 

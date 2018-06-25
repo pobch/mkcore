@@ -126,7 +126,7 @@ class RoomAnswer(models.Model):
     answer = JSONField(null=False, blank=True, default=list)
     first_saved_at = models.DateTimeField(auto_now_add=True, null=False)
     submitted = models.BooleanField(null=False, default=False)
-    submitted_at = models.DateTimeField(null=True)
+    submitted_at = models.DateTimeField(null=True, blank=True)
 
     def __str__(self):
         return self.guest_room_relation.user.email + ' answer in room: ' + (

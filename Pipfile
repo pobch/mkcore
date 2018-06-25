@@ -24,6 +24,9 @@ django-templated-mail = "*"
 "psycopg2" = "*"
 "psycopg2-binary" = "*"
 djangorestframework-bulk = "*"
+rest-pandas = "*"
+pandas = "*"
+openpyxl = "*"
 
 
 [dev-packages]
