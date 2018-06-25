@@ -4,6 +4,6 @@ from .views import RoomAnswerExportView, ForTest
 
 
 urlpatterns = [
-    path('answers/', RoomAnswerExportView.as_view()), # + ?room_id=<'id' of Room model>
+    path('answers/', RoomAnswerExportView.as_view()), # e.g., + ?format=xlsx&room_id=34
     path('test/', ForTest.as_view()),
 ]

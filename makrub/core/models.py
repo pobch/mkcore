@@ -84,6 +84,19 @@ class UserProfile(models.Model):
 #         return user_model.jwt_secret
 
 
+# For 'attached_links' field in Room model:
+def default_attached_links_value():
+    """
+    'link_url': 'http://www.example.com/data.pdf'
+    'content_type': 'doc' ### choose one of 'doc' / 'video' / 'audio' / 'others'
+    """
+    return [
+        {'link_url': '', 'content_type': 'others'},
+        {'link_url': '', 'content_type': 'others'},
+        {'link_url': '', 'content_type': 'others'},
+    ]
+
+
 class Room(models.Model):
     # pattern : ( <actual value in database>, <user friendly choice name> )
     STATUS_CHOICES = (
@@ -109,7 +122,9 @@ class Room(models.Model):
     start_at = models.DateTimeField(blank=True, null=True)
     end_at = models.DateTimeField(blank=True, null=True)
     image_url = models.URLField(blank=True, null=False) # this is CharField
+    attached_links = JSONField(null=False, blank=True, default=default_attached_links_value)
     status = models.CharField(max_length=10, choices=STATUS_CHOICES, default='draft', null=False)
+
     created_at = models.DateTimeField(auto_now_add=True, null=False)
     updated_at = models.DateTimeField(auto_now=True, null=False)
     published_at = models.DateTimeField(null=True, blank=True)
