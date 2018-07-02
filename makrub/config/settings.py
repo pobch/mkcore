@@ -40,6 +40,11 @@ else:
     if os.path.isfile(dotenv_file):
         dotenv.read_dotenv(BASE_DIR)
 
+    dotenv_file = os.path.join('/etc/app', '.env')
+
+    if os.path.isfile('/etc/app/.env'):
+        dotenv.read_dotenv('/etc/app')
+
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/2.0/howto/deployment/checklist/
 

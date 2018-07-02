@@ -9,6 +9,7 @@ dev:
 		-it \
 		-p 8000:8000 \
 		-v ${PWD}:/app \
+		-v ${PWD}/makrub/.env:/etc/app/.env \
 		-e "APP_ENV=local" \
 		-e "VAULT_TOKEN=${VAULT_TOKEN}" \
 		makrub/mkcore \
@@ -17,13 +18,15 @@ dev:
 migrate:
 	sudo docker run \
 		-it \
-		-e "VAULT_TOKEN=${VAULT_TOKEN}" \
+		-v ${PWD}:/app \
+		-v ${PWD}/makrub/.env:/etc/app/.env \
 		makrub/mkcore \
-		python makrub/manage.py migrate
+		python manage.py migrate
 
 createsuperuser:
 	sudo docker run \
 		-it \
-		-e "VAULT_TOKEN=${VAULT_TOKEN}" \
+		-v ${PWD}:/app \
+		-v ${PWD}/makrub/.env:/etc/app/.env \
 		makrub/mkcore \
-		python makrub/manage.py createsuperuser
+		python manage.py createsuperuser
