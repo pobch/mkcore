@@ -65,3 +65,6 @@ otp/
 
 #Database
 *.sqlite3
+
+# deployment
+/generated

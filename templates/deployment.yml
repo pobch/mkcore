@@ -43,7 +43,7 @@ spec:
           - name: app-config
             mountPath: /etc/app
       imagePullSecrets:
-        - name: studiotwist-registry
+        - name: ${APP_NAMESPACE}-registry
 ---
 apiVersion: v1
 kind: Service
