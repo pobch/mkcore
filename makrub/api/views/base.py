@@ -1,6 +1,7 @@
 # import uuid
 from django.utils import timezone # use this instead of python's datetime to avoid
                         # RuntimeWarning: received a naive datetime while time zone support is active.
+from django.db.models import Q
 from rest_framework import generics, status, views
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated, AllowAny
@@ -192,7 +193,9 @@ class JoinRoom(views.APIView):
         filter_keywords = {}
         for field in ['room_code', 'room_password']:
             filter_keywords[field] = request.data.get(field, '')
-        room_obj = get_object_or_404(Room.objects.all(), **filter_keywords, status='active')
+        room_obj = get_object_or_404(Room.objects.all(),
+            Q(last_date_to_join__isnull=True) | Q(last_date_to_join__gte=timezone.now()),
+            **filter_keywords, status='active')
         guest_obj = request.user
         # data = {'user': guest_obj.id, 'room': room_obj.id}
         # serializer = GuestRoomRelationSerializer(data=data)

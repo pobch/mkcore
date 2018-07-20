@@ -84,19 +84,6 @@ class UserProfile(models.Model):
 #         return user_model.jwt_secret
 
 
-# For 'attached_links' field in Room model:
-def default_attached_links_value():
-    """
-    'link_url': 'http://www.example.com/data.pdf'
-    'content_type': 'doc' ### choose one of 'doc' / 'video' / 'audio' / 'others'
-    """
-    return [
-        {'link_url': '', 'content_type': 'others'},
-        {'link_url': '', 'content_type': 'others'},
-        {'link_url': '', 'content_type': 'others'},
-    ]
-
-
 class Room(models.Model):
     # pattern : ( <actual value in database>, <user friendly choice name> )
     STATUS_CHOICES = (
@@ -112,6 +99,8 @@ class Room(models.Model):
         related_name='rooms_guest',
         through='GuestRoomRelation')
         # can be [] (no need to set blank and null = False)
+    last_date_to_join = models.DateTimeField(blank=True, null=True)
+    guest_ttl_in_days = models.IntegerField(blank=True, null=True)
 
     title = models.CharField(max_length=200, null=False)
     description = models.TextField(null=False)
@@ -122,7 +111,7 @@ class Room(models.Model):
     start_at = models.DateTimeField(blank=True, null=True)
     end_at = models.DateTimeField(blank=True, null=True)
     image_url = models.URLField(blank=True, null=False) # this is CharField
-    attached_links = JSONField(null=False, blank=True, default=default_attached_links_value)
+    attached_links = JSONField(null=False, blank=True, default=list)
     status = models.CharField(max_length=10, choices=STATUS_CHOICES, default='draft', null=False)
 
     created_at = models.DateTimeField(auto_now_add=True, null=False)
@@ -154,7 +143,8 @@ class GuestRoomRelation(models.Model):
     request_date = models.DateTimeField(null=False, auto_now_add=True)
     accepted = models.BooleanField(null=False, default=False)
     accept_date = models.DateTimeField(null=True, blank=True)
-    created_by_room_owner = models.BooleanField(null=False, default=False)
+    expire_date = models.DateTimeField(null=True, blank=True)
+    created_by_room_owner = models.BooleanField(null=False, default=False) # when a room owner clones guest list
 
     class Meta:
         unique_together = ('user', 'room',)

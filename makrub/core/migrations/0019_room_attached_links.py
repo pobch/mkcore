@@ -15,6 +15,6 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='room',
             name='attached_links',
-            field=django.contrib.postgres.fields.jsonb.JSONField(blank=True, default=core.models.default_attached_links_value),
+            field=django.contrib.postgres.fields.jsonb.JSONField(blank=True, default=list),
         ),
     ]
