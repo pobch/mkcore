@@ -32,12 +32,12 @@ urlpatterns = [
     path('joinreqs/byroomid/<int:room_id>/', base.ListJoinRequestsByRoomId.as_view()),
                                                                 # List all row in GuestRoomRelation model,
                                                                 # filtered by room_id field
-    path('joinreqs/accept-all/', base.AcceptAllJoinReqsByRelationIds.as_view()),
-                                                                # For accept many join reqs
-                                                                # by bulk update GuestRoomRelation rows
     path('joinreqs/<int:pk>/', base.DetailJoinRequest.as_view()), # For accept/deny a join req by PATCH/DELETE
                                                                 # to a GuestRoomRelation row
-    path('joinreqs/bulkcreate/', base.BulkCreateGuestRoomRelation.as_view()),
+    path('joinreqs/bulkcreateupdate/', base.BulkCreateUpdateJoinRequests.as_view()),
+    # path('joinreqs/accept-all/', base.AcceptAllJoinReqsByRelationIds.as_view()),
+    #                                                             # For accept many join reqs
+    #                                                             # by bulk update GuestRoomRelation rows
     path('joinreqs/pending/', base.ListPendingRooms.as_view()),
     path('guestroomrelation/', base.ListGuestRoomRelation.as_view()),
 

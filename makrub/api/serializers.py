@@ -1,7 +1,13 @@
 from rest_framework import serializers
-from rest_framework_bulk import BulkSerializerMixin
+from rest_framework_bulk import BulkSerializerMixin, BulkListSerializer
 from django.core import exceptions
 import django.contrib.auth.password_validation as validators
+# for building my bulk mixin
+from rest_framework.utils import html
+from rest_framework.exceptions import ValidationError
+from rest_framework.settings import api_settings
+from rest_framework.fields import SkipField
+# end
 
 from core.models import User, UserProfile, Room, RoomAnswer, GuestRoomRelation
 
@@ -105,6 +111,7 @@ class UserSerializer(serializers.ModelSerializer):
 class GuestRoomRelationSerializer(serializers.ModelSerializer):
     room_title = serializers.CharField(source='room.title', read_only=True)
     room_room_code = serializers.CharField(source='room.room_code', read_only=True)
+    room_guest_ttl_in_days = serializers.IntegerField(source='room.guest_ttl_in_days', read_only=True)
     user_email = serializers.EmailField(source='user.email', read_only=True)
     user_first_name = serializers.CharField(source='user.first_name', read_only=True)
     user_last_name = serializers.CharField(source='user.last_name', read_only=True)
@@ -115,7 +122,60 @@ class GuestRoomRelationSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 
+class MyBulkListSerializerMixin:
+    def to_internal_value(self, data):
+        """
+        List of dicts of native values <- List of dicts of primitive datatypes.
+        """
+        if html.is_html_input(data):
+            data = html.parse_html_list(data, default=[])
+
+        if not isinstance(data, list):
+            message = self.error_messages['not_a_list'].format(
+                input_type=type(data).__name__
+            )
+            raise ValidationError({
+                api_settings.NON_FIELD_ERRORS_KEY: [message]
+            }, code='not_a_list')
+
+        if not self.allow_empty and len(data) == 0:
+            if self.parent and self.partial:
+                raise SkipField()
+
+            message = self.error_messages['empty']
+            raise ValidationError({
+                api_settings.NON_FIELD_ERRORS_KEY: [message]
+            }, code='empty')
+
+        ret = []
+        errors = []
+
+        for item in data:
+            try:
+                # code that is inserted:
+                # prepare child serializer to only handle one instance
+                self.child.instance = self.instance.get(id=item['id']) if self.instance else None
+                self.child.initial_data = item
+                # end
+                validated = self.child.run_validation(item)
+            except ValidationError as exc:
+                errors.append(exc.detail)
+            else:
+                ret.append(validated)
+                errors.append({})
+
+        if any(errors):
+            raise ValidationError(errors)
+
+        return ret
+
+
+class MyBulkListSerializer(MyBulkListSerializerMixin, BulkListSerializer):
+    pass
+
+
 class GuestRoomRelationBulkSerializer(BulkSerializerMixin, GuestRoomRelationSerializer):
     class Meta:
         model = GuestRoomRelation
         fields = '__all__'
+        list_serializer_class = MyBulkListSerializer

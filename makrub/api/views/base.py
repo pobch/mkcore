@@ -6,7 +6,7 @@ from rest_framework import generics, status, views
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated, AllowAny
 from django.shortcuts import get_object_or_404
-from rest_framework_bulk import BulkCreateAPIView
+from rest_framework_bulk import ListBulkCreateUpdateAPIView
 
 from core.models import User, Room, RoomAnswer, UserProfile, GuestRoomRelation
 from api.serializers import (UserSerializer, UserProfileSerializer, RoomSerializer,
@@ -51,8 +51,11 @@ class ListRooms(generics.ListCreateAPIView):
         if query == 'owner':
             return Room.objects.filter(user=user).order_by('-published_at', '-created_at')
         if query == 'guest':
-            return Room.objects.filter(guests=user, guestroomrelation__accepted=True) \
-                .order_by('-guestroomrelation__accept_date')
+            return Room.objects.filter(
+                    Q(guest_ttl_in_days__isnull=True) | Q(guestroomrelation__expire_date__gte=timezone.now()),
+                    guests=user,
+                    guestroomrelation__accepted=True
+                ).order_by('-guestroomrelation__accept_date')
             # bcoz the field which is ordered by is reverse relation (list type), so if there are
             #   multiple values in the list, the result will include duplicate items without raising error!!!
             #   see 'Note' section on https://docs.djangoproject.com/en/2.0/ref/models/querysets/#order-by
@@ -61,6 +64,27 @@ class ListRooms(generics.ListCreateAPIView):
 
     def perform_create(self, serializer):
         serializer.save(user=self.request.user)
+
+
+class DetailRoom(generics.RetrieveUpdateDestroyAPIView):
+    queryset = Room.objects.all()
+    serializer_class = RoomSerializer
+    permission_classes = (IsOwnerOrGuest,)
+
+
+class DetailRoomByRoomCode(generics.RetrieveAPIView):
+    queryset = Room.objects.all()
+    serializer_class = RoomSerializer
+
+    def get_object(self):
+        queryset = self.get_queryset()
+        filter_by = {
+            'room_code': self.request.query_params.get('room_code', None),
+            'user': self.request.user, # will search only owned room
+        }
+        room_obj = get_object_or_404(queryset, **filter_by)
+        self.check_object_permissions(self.request, room_obj)
+        return room_obj
 
 
 class ListPendingRooms(generics.ListAPIView):
@@ -85,21 +109,21 @@ class ListJoinRequestsByRoomId(generics.ListAPIView):
         return GuestRoomRelation.objects.filter(room=self.kwargs['room_id'])
 
 
-class AcceptAllJoinReqsByRelationIds(views.APIView):
-    def post(self, request, format='json'):
-        """
-        receive json 'ids' which is a list of 'id' field of GuestRoomRelation model to filter rows by 'id'
-        then bulk update 'accepted' and 'accept_date' fields of filtered GuestRoomRelation rows
-        """
-        row_ids_to_update = request.data.get('ids', [])
-        try:
-            queryset_filtered = GuestRoomRelation.objects.filter(id__in=row_ids_to_update)
-            queryset_filtered.update(accepted=True, accept_date=timezone.now())
-            # DB already updated, then serialize to response in json:
-            serializer = GuestRoomRelationSerializer(queryset_filtered, many=True)
-        except:
-            return Response('Unexpected errors when accepting many join reqs', status=status.HTTP_400_BAD_REQUEST)
-        return Response(serializer.data, status=status.HTTP_200_OK)
+# class AcceptAllJoinReqsByRelationIds(views.APIView):
+#     def post(self, request, format='json'):
+#         """
+#         receive json 'ids' which is a list of 'id' field of GuestRoomRelation model to filter rows by 'id'
+#         then bulk update 'accepted' and 'accept_date' fields of filtered GuestRoomRelation rows
+#         """
+#         row_ids_to_update = request.data.get('ids', [])
+#         try:
+#             queryset_filtered = GuestRoomRelation.objects.filter(id__in=row_ids_to_update)
+#             queryset_filtered.update(accepted=True, accept_date=timezone.now())
+#             # DB already updated, then serialize to response in json:
+#             serializer = GuestRoomRelationSerializer(queryset_filtered, many=True)
+#         except:
+#             return Response('Unexpected errors when accepting many join reqs', status=status.HTTP_400_BAD_REQUEST)
+#         return Response(serializer.data, status=status.HTTP_200_OK)
 
 
 class DetailJoinRequest(generics.RetrieveUpdateDestroyAPIView):
@@ -114,25 +138,25 @@ class DetailJoinRequest(generics.RetrieveUpdateDestroyAPIView):
     serializer_class = GuestRoomRelationSerializer
 
 
-class DetailRoom(generics.RetrieveUpdateDestroyAPIView):
-    queryset = Room.objects.all()
-    serializer_class = RoomSerializer
-    permission_classes = (IsOwnerOrGuest,)
-
-
-class DetailRoomByRoomCode(generics.RetrieveAPIView):
-    queryset = Room.objects.all()
-    serializer_class = RoomSerializer
-
-    def get_object(self):
-        queryset = self.get_queryset()
-        filter_by = {
-            'room_code': self.request.query_params.get('room_code', None),
-            'user': self.request.user, # will search only owned room
-        }
-        room_obj = get_object_or_404(queryset, **filter_by)
-        self.check_object_permissions(self.request, room_obj)
-        return room_obj
+class BulkCreateUpdateJoinRequests(ListBulkCreateUpdateAPIView):
+    """
+    Input: POST a list like this:
+        [   {   "created_by_room_owner": true,
+                "user": <guest id>,
+                "room": <room id>,
+                "accepted": <true/false>,
+                "accept_date"
+            },
+            {...},
+            ...
+        ]
+    Return: a list of new created rows
+    Error When: an error will occurs if creating some elements in the list violates unique_together condition
+    Performance Note: each row created at different timestamp bcoz (as my guess) django-rest-framework-bulk
+        creates each row using loop, not using django's bulk_create()
+    """
+    queryset = GuestRoomRelation.objects.all()
+    serializer_class = GuestRoomRelationBulkSerializer
 
 
 class ListRoomAnswers(generics.ListCreateAPIView):
@@ -227,30 +251,10 @@ class LeaveRoom(views.APIView):
         return Response('Leave success', status=status.HTTP_200_OK)
 
 
+# for testing
 class ListGuestRoomRelation(generics.ListCreateAPIView):
     queryset = GuestRoomRelation.objects.all()
     serializer_class = GuestRoomRelationSerializer
-
-
-class BulkCreateGuestRoomRelation(BulkCreateAPIView):
-    """
-    Input: POST a list like this:
-        [   {   "created_by_room_owner": true,
-                "user": <guest id>,
-                "room": <room id>,
-                "accepted": <true/false>,
-                "accept_date"
-            },
-            {...},
-            ...
-        ]
-    Return: a list of new created rows
-    Error When: an error will occurs if creating some elements in the list violates unique_together condition
-    Performance Note: each row created at different timestamp bcoz (as my guess) django-rest-framework-bulk
-        creates each row using loop, not using django's bulk_create()
-    """
-    queryset = GuestRoomRelation.objects.all()
-    serializer_class = GuestRoomRelationBulkSerializer
 
 
 # class UserLogoutAllView(APIView):
