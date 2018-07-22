@@ -14,8 +14,6 @@ djangorestframework-jwt = "*"
 django-otp = "*"
 whitenoise = "*"
 django-dotenv = "*"
-pylint = "*"
-pylint-django = "*"
 django-cors-headers = "*"
 dj-database-url = "*"
 requests = "*"
@@ -27,7 +25,10 @@ djangorestframework-bulk = "*"
 rest-pandas = "*"
 pandas = "*"
 openpyxl = "*"
+pylint = "*"
+pylint-django = "*"
 
 
 [dev-packages]
 
+pylint = "*"

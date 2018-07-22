@@ -6,7 +6,7 @@ from rest_framework import generics, status, views
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated, AllowAny
 from django.shortcuts import get_object_or_404
-from rest_framework_bulk import ListBulkCreateUpdateAPIView
+from rest_framework_bulk import BulkCreateAPIView
 
 from core.models import User, Room, RoomAnswer, UserProfile, GuestRoomRelation
 from api.serializers import (UserSerializer, UserProfileSerializer, RoomSerializer,
@@ -109,43 +109,52 @@ class ListJoinRequestsByRoomId(generics.ListAPIView):
         return GuestRoomRelation.objects.filter(room=self.kwargs['room_id'])
 
 
-# class AcceptAllJoinReqsByRelationIds(views.APIView):
-#     def post(self, request, format='json'):
-#         """
-#         receive json 'ids' which is a list of 'id' field of GuestRoomRelation model to filter rows by 'id'
-#         then bulk update 'accepted' and 'accept_date' fields of filtered GuestRoomRelation rows
-#         """
-#         row_ids_to_update = request.data.get('ids', [])
-#         try:
-#             queryset_filtered = GuestRoomRelation.objects.filter(id__in=row_ids_to_update)
-#             queryset_filtered.update(accepted=True, accept_date=timezone.now())
-#             # DB already updated, then serialize to response in json:
-#             serializer = GuestRoomRelationSerializer(queryset_filtered, many=True)
-#         except:
-#             return Response('Unexpected errors when accepting many join reqs', status=status.HTTP_400_BAD_REQUEST)
-#         return Response(serializer.data, status=status.HTTP_200_OK)
-
-
 class DetailJoinRequest(generics.RetrieveUpdateDestroyAPIView):
     """
-    To accept each join req, frontend will send a json body below together with
-        row 'id' in URL to PATCH a GuestRoomRelation row of that 'id'
-        json body : { accepted: true, accept_date: new Date() }
-    To deny each join req, frontend will send a DELETE method together with row 'id' in URL
+    To accept each join req, frontend will send a json body below via
+        URL containing row 'id' to PATCH a GuestRoomRelation row of that 'id'
+        json body : { accepted: true, accept_date: <date type>, expire_date: <date type> }
+    To deny each join req, frontend will send a DELETE method via URL containing row 'id'
         to DELETE a GuestRoomRelation row of that 'id'
     """
     queryset = GuestRoomRelation.objects.all()
     serializer_class = GuestRoomRelationSerializer
 
 
-class BulkCreateUpdateJoinRequests(ListBulkCreateUpdateAPIView):
+class BulkUpdateJoinRequests(views.APIView):
+    def post(self, request, format='json'):
+        """
+        receive json :
+        {
+            "ids": [...], # A list of row 'id' of GuestRoomRelation model to filter
+            "eachRowData": {"accepted": true, "accept_date": <date type>, "expire_date": <date type>}
+                # data to bulk update each row (same data in every row)
+        }
+        """
+        row_ids_to_update = request.data.get('ids', [])
+        each_row_data = request.data.get('eachRowData', {})
+        try:
+            queryset_filtered = GuestRoomRelation.objects.filter(id__in=row_ids_to_update)
+            queryset_filtered.update(**each_row_data)
+            # DB already updated, then serialize to response in json:
+            serializer = GuestRoomRelationSerializer(queryset_filtered, many=True)
+        except:
+            return Response(
+                {'detail': 'Unexpected errors when accepting many join reqs'},
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR
+            )
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+
+class BulkCreateJoinRequests(BulkCreateAPIView):
     """
     Input: POST a list like this:
         [   {   "created_by_room_owner": true,
                 "user": <guest id>,
                 "room": <room id>,
                 "accepted": <true/false>,
-                "accept_date"
+                "accept_date": <date type>,
+                "expire_date": <date type>
             },
             {...},
             ...
