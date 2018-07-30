@@ -1,4 +1,4 @@
-from django.urls import path, re_path, include
+from django.urls import path, include
 # from djoser import views as djoser_views
 from rest_framework_jwt import views as jwt_views
 from .views import auth, base
