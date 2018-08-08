@@ -13,7 +13,7 @@ dev:
 		-e "APP_ENV=local" \
 		-e "VAULT_TOKEN=${VAULT_TOKEN}" \
 		makrub/mkcore \
-		/usr/local/bin/uwsgi --http :8000 --chdir /app/makrub --wsgi-file /app/makrub/config/wsgi.py --py-autoreload 1
+		/usr/local/bin/uwsgi --ini /app/makrub/config/uwsgi.ini --py-autoreload 1
 
 migrate:
 	sudo docker run \

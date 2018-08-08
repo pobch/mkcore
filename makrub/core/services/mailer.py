@@ -17,7 +17,10 @@ def send_confirmation_email(user, options):
             frontend_domain,
             getattr(settings,'USER_ACTIVATION_CONFIRM_URL', 'not_provided_in_settings')
         )
-    url = "%s/%s/%s" % (confirmation_url, options['uid'], options['token'])
+
+    app_url = getattr(settings, 'FRONTEND_APP_URL', 'not_provided_in_settings')
+    url = "%s/signup/activate/confirm/%s/%s" % (app_url, options['uid'], options['token'])
+
     # uid.decode('utf-8')
 
     # message = render_to_string('email/confirmation_email.html', {

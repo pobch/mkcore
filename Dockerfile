@@ -23,6 +23,8 @@ ADD . /app
 WORKDIR /app/makrub
 RUN pipenv install --system
 
+RUN addgroup -S uwsgi && adduser -S -G uwsgi uwsgi
+
 EXPOSE 8000
 # CMD ["python", "makrub/manage.py", "runserver", "0.0.0.0:8000"]
 # CMD ["/usr/local/bin/uwsgi", "--http", ":8000", "--wsgi-file", "markub/config/wsgi.py", "--py-autoreload", "1"]

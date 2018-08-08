@@ -20,6 +20,7 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('api/', include('api.urls')),
     path('api/export/', include('exporter.urls')),
+    path('', include('core.urls')),
 
     # re_path(r'^otp/', include('otp.urls')),
 ]
