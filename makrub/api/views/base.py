@@ -110,6 +110,16 @@ class ListJoinRequestsByRoomId(generics.ListAPIView):
         return GuestRoomRelation.objects.filter(room=self.kwargs['room_id'])
 
 
+class DetailJoinRequestOfMeByRoomId(generics.RetrieveAPIView):
+    queryset = GuestRoomRelation.objects.all()
+    serializer_class = GuestRoomRelationSerializer
+
+    def get_object(self):
+        me = self.request.user
+        room_id = self.kwargs['room_id']
+        return get_object_or_404(GuestRoomRelation.objects.all(), user=me, room=room_id)
+
+
 class DetailJoinRequest(generics.RetrieveUpdateDestroyAPIView):
     """
     To accept each join req, frontend will send a json body below via
