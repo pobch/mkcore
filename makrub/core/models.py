@@ -137,6 +137,7 @@ class RoomAnswer(models.Model):
             self.guest_room_relation.room.room_code)
 
 
+#pylint:disable=E1101
 class GuestRoomRelation(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE) # guest user
     room = models.ForeignKey(Room, on_delete=models.CASCADE)
