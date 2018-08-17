@@ -3,16 +3,20 @@ from django.utils import timezone # use this instead of python's datetime to avo
                         # RuntimeWarning: received a naive datetime while time zone support is active.
 from django.db.models import Q
 from django.shortcuts import get_object_or_404
+from django.contrib.auth import get_user_model
 
 from rest_framework import generics, status, views
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated, AllowAny
 from rest_framework_bulk import BulkCreateAPIView
 
-from core.models import User, Room, RoomAnswer, UserProfile, GuestRoomRelation
+from core.models import Room, RoomAnswer, UserProfile, GuestRoomRelation
 from api.serializers import (UserSerializer, UserProfileSerializer, RoomSerializer,
     RoomAnswerSerializer, GuestRoomRelationSerializer, GuestRoomRelationBulkSerializer)
 from api.permissions import IsOwnerForUserModel, IsOwner, IsOwnerOrGuest
+
+
+User = get_user_model()
 
 
 # For testing purpose only. Have to delete this view in production
