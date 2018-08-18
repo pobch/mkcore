@@ -68,7 +68,7 @@ class User(AbstractUser):
 
 
 class UserProfile(models.Model):
-    user = models.OneToOneField(User, related_name='profile', on_delete=models.CASCADE, null=True)
+    user = models.OneToOneField(User, related_name='profile', on_delete=models.CASCADE, null=False, blank=False)
 
     mobile_num = models.CharField(max_length=20, blank=True, null=False, default='')
 
@@ -89,27 +89,28 @@ class Room(models.Model):
         ('closed', 'Closed Room'),
     )
     # one owner per room
-    user = models.ForeignKey(User, related_name='rooms_owner', on_delete=models.CASCADE, null=False)
+    user = models.ForeignKey(User, related_name='rooms_owner', on_delete=models.CASCADE, null=False, blank=False)
     # many guests per room, many rooms per user
     guests = models.ManyToManyField(
         User,
         related_name='rooms_guest',
         through='GuestRoomRelation')
-        # can be [] (no need to set blank and null = False)
+        # can be [] (this field is not shown on admin page because of 'through' argument ??)
+        # From official doc: null has no effect since there is no way to require a relationship at the database level.
     last_date_to_join = models.DateTimeField(blank=True, null=True)
     guest_ttl_in_days = models.IntegerField(blank=True, null=True)
 
-    title = models.CharField(max_length=200, null=False)
-    description = models.TextField(null=False)
+    title = models.CharField(max_length=200, blank=False, null=False)
+    description = models.TextField(blank=False, null=False)
     room_code = models.CharField(max_length=20, unique=True, blank=False, null=False)
     room_password = models.CharField(max_length=20, blank=True, null=False)
     instructor_name = models.CharField(max_length=200, blank=False, null=False)
-    survey = JSONField(null=False, blank=True, default=list)
+    survey = JSONField(blank=True, null=False, default=list)
     start_at = models.DateTimeField(blank=True, null=True)
     end_at = models.DateTimeField(blank=True, null=True)
     image_url = models.URLField(blank=True, null=False) # this is CharField
-    attached_links = JSONField(null=False, blank=True, default=list)
-    status = models.CharField(max_length=10, choices=STATUS_CHOICES, default='draft', null=False)
+    attached_links = JSONField(blank=True, null=False, default=list)
+    status = models.CharField(max_length=10, choices=STATUS_CHOICES, default='draft', null=False, blank=False)
 
     created_at = models.DateTimeField(auto_now_add=True, null=False)
     updated_at = models.DateTimeField(auto_now=True, null=False)
@@ -122,11 +123,11 @@ class Room(models.Model):
 
 class RoomAnswer(models.Model):
     guest_room_relation = models.OneToOneField('GuestRoomRelation',
-        related_name='answer_detail', null=True, on_delete=models.CASCADE)
+        related_name='answer_detail', null=False, blank=False, on_delete=models.CASCADE)
 
     answer = JSONField(null=False, blank=True, default=list)
     first_saved_at = models.DateTimeField(auto_now_add=True, null=False)
-    submitted = models.BooleanField(null=False, default=False)
+    submitted = models.BooleanField(null=False, blank=True, default=False)
     submitted_at = models.DateTimeField(null=True, blank=True)
 
     def __str__(self):
@@ -136,13 +137,13 @@ class RoomAnswer(models.Model):
 
 #pylint:disable=E1101
 class GuestRoomRelation(models.Model):
-    user = models.ForeignKey(User, on_delete=models.CASCADE) # guest user
-    room = models.ForeignKey(Room, on_delete=models.CASCADE)
+    user = models.ForeignKey(User, on_delete=models.CASCADE, null=False, blank=False) # guest user
+    room = models.ForeignKey(Room, on_delete=models.CASCADE, null=False, blank=False)
     request_date = models.DateTimeField(null=False, auto_now_add=True)
-    accepted = models.BooleanField(null=False, default=False)
+    accepted = models.BooleanField(null=False, blank=True, default=False)
     accept_date = models.DateTimeField(null=True, blank=True)
     expire_date = models.DateTimeField(null=True, blank=True)
-    created_by_room_owner = models.BooleanField(null=False, default=False) # when a room owner clones guest list
+    created_by_room_owner = models.BooleanField(null=False, blank=True, default=False) # when a room owner clones guest list
 
     class Meta:
         unique_together = ('user', 'room',)
