@@ -50,7 +50,7 @@ coverage.xml
 docs/_build/
 
 # Note
-/Note*
+Note.py
 
 # otp
 otp/
