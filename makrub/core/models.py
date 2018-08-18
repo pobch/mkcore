@@ -73,7 +73,7 @@ class UserProfile(models.Model):
     mobile_num = models.CharField(max_length=20, blank=True, null=False, default='')
 
     def __str__(self):
-        return "user's mobile num: {}".format(self.mobile_num)
+        return f'ID: {self.id}, User: {self.user.email}'
 
 
 # This function is set in 'settings.py' telling where JWT secret keys are stored
@@ -118,7 +118,7 @@ class Room(models.Model):
     have_survey_when_published = models.BooleanField(null=False, blank=True, default=True)
 
     def __str__(self):
-        return self.room_code + ':' + self.title
+        return f'ID: {self.id}, Title: {self.title}'
 
 
 class RoomAnswer(models.Model):
@@ -131,8 +131,8 @@ class RoomAnswer(models.Model):
     submitted_at = models.DateTimeField(null=True, blank=True)
 
     def __str__(self):
-        return self.guest_room_relation.user.email + ' answer in room: ' + (
-            self.guest_room_relation.room.room_code)
+        return f'ID: {self.id}, RoomTitle: {self.guest_room_relation.room.title}' + \
+            f', AnsBy: {self.guest_room_relation.user.email}'
 
 
 #pylint:disable=E1101
@@ -149,5 +149,4 @@ class GuestRoomRelation(models.Model):
         unique_together = ('user', 'room',)
 
     def __str__(self):
-        return '{0} {1} is a guest in this room: {2} {3}'.format(
-            self.user.id, self.user.email, self.room.id, self.room.title)
+        return f'ID: {self.id}, RoomTitle: {self.room.title}, Guest: {self.user.email}'
