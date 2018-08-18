@@ -1,9 +1,13 @@
 from django.contrib import admin
-from django.contrib.auth.models import Group
-from .models import User, UserProfile, Room, RoomAnswer, GuestRoomRelation
+from django.contrib.auth import get_user_model
+# from django.contrib.auth.models import Group
+
+from .models import UserProfile, Room, RoomAnswer, GuestRoomRelation
 
 
-admin.site.unregister(Group)
+User = get_user_model()
+
+# admin.site.unregister(Group)
 admin.site.register(User)
 admin.site.register(UserProfile)
 admin.site.register(Room)
