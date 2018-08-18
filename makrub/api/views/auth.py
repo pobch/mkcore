@@ -1,6 +1,7 @@
 from django.urls import reverse
 from django.utils.encoding import force_bytes
 from django.utils.http import urlsafe_base64_decode, urlsafe_base64_encode, base36_to_int
+from django.contrib.auth import get_user_model
 
 from rest_framework import status
 from rest_framework.views import APIView
@@ -9,9 +10,11 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.authentication import TokenAuthentication
 
 from core.services import mailer, tokens
-from core.models import User
 
 from api import serializers
+
+
+User = get_user_model()
 
 
 class CheckMe(APIView):

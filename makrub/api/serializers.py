@@ -1,9 +1,13 @@
 from rest_framework import serializers
 from rest_framework_bulk import BulkSerializerMixin
 from django.core import exceptions
+from django.contrib.auth import get_user_model
 import django.contrib.auth.password_validation as validators
 
-from core.models import User, UserProfile, Room, RoomAnswer, GuestRoomRelation
+from core.models import UserProfile, Room, RoomAnswer, GuestRoomRelation
+
+
+User = get_user_model()
 
 
 class UserProfileSerializer(serializers.ModelSerializer):
@@ -56,7 +60,7 @@ class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
         fields = '__all__'
-        read_only_fields = ('last_login', 'is_active', 'is_admin')
+        read_only_fields = ('last_login', 'is_active',)
         extra_kwargs = {
             'password': {'write_only': True}, # hide password field when GET request
             }
@@ -94,7 +98,6 @@ class UserSerializer(serializers.ModelSerializer):
         instance.first_name = validated_data.get('first_name', instance.first_name)
         instance.last_name = validated_data.get('last_name', instance.last_name)
         instance.is_active = validated_data.get('is_active', instance.is_active)
-        instance.is_admin = validated_data.get('is_admin', instance.is_admin)
         password = validated_data.get('password', None)
         if password:
             instance.set_password(password)
