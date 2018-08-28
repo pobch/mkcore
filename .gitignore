@@ -68,3 +68,4 @@ otp/
 
 # deployment
 /generated
+/makrub/staticfiles

@@ -4,7 +4,7 @@ MAINTAINER Metz Charusasi "metz@studiotwist.co"
 RUN apk add --no-cache --virtual .build-deps \
         build-base postgresql-dev libffi-dev linux-headers
 
-RUN pip install uwsgi pipenv
+RUN pip install uwsgi
 RUN find /usr/local \
         \( -type d -a -name test -o -name tests \) \
         -o \( -type f -a -name '*.pyc' -o -name '*.pyo' \) \
@@ -21,11 +21,9 @@ RUN find /usr/local \
 
 ADD . /app
 WORKDIR /app/makrub
-RUN pipenv install --system
+RUN pip install -r /app/requirements.txt
 
 RUN addgroup -S uwsgi && adduser -S -G uwsgi uwsgi
 
 EXPOSE 8000
-# CMD ["python", "makrub/manage.py", "runserver", "0.0.0.0:8000"]
-# CMD ["/usr/local/bin/uwsgi", "--http", ":8000", "--wsgi-file", "markub/config/wsgi.py", "--py-autoreload", "1"]
 CMD ["/app/start.sh"]

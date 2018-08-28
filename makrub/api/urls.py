@@ -14,6 +14,7 @@ urlpatterns = [
     path('auth/register/', auth.Register.as_view(), name="auth_register"),
     path('auth/confirmation/', auth.Confirmation.as_view(), name='confirmation'),
     path('auth/check-me/', auth.CheckMe.as_view(), name="auth_check_me"),
+    path('auth/facebook/', auth.Facebook.as_view(), name="auth_facebook"),
 
     # my base views:
     path('users/', base.ListUsers.as_view(), name='user-list'),

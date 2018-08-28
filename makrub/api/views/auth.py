@@ -1,7 +1,11 @@
+import requests
+import facebook
+
 from django.urls import reverse
 from django.utils.encoding import force_bytes
 from django.utils.http import urlsafe_base64_decode, urlsafe_base64_encode, base36_to_int
 from django.contrib.auth import get_user_model
+from django.conf import settings
 
 from rest_framework import status
 from rest_framework.views import APIView
@@ -13,9 +17,7 @@ from core.services import mailer, tokens
 
 from api import serializers
 
-
 User = get_user_model()
-
 
 class CheckMe(APIView):
     """
@@ -25,6 +27,49 @@ class CheckMe(APIView):
     permission_classes = (IsAuthenticated,)
 
     def get(self, request, format="json"):
+        return Response("OK")
+
+class Facebook(APIView):
+    """
+    Authenticate via facebook
+    """
+    def get(self, request):
+        code = request.GET.get('code')
+
+        if not code:
+            return Response(status = 400)
+
+        app_id = getattr(settings, 'FACEBOOK_APP_ID')
+        app_secret = getattr(settings, 'FACEBOOK_APP_SECRET')
+
+        params = {
+            'client_id': app_id,
+            'client_secret': app_secret,
+            'code': code,
+            'redirect_uri': 'https://localhost:3000/app/auth/facebook',
+        }
+
+        r = requests.get('https://graph.facebook.com/v3.1/oauth/access_token', params=params)
+        data = r.json()
+
+        if 'error' in data:
+            return Response(data["error"], status=422)
+        try:
+            user = User.objects.get(email = "methsg@gmail.com")
+        except User.DoesNotExist:
+            graph = facebook.GraphAPI(access_token=data["access_token"], version="3.0")
+            me = graph.get_object(id="me", fields="email,first_name,last_name")
+
+            user = User()
+            user.email = me["email"]
+            user.first_name = me["first_name"]
+            user.last_name = me["last_name"]
+
+            user.save()
+            pass
+
+        print(user)
+
         return Response("OK")
 
 
