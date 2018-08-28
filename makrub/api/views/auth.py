@@ -1,5 +1,6 @@
 import requests
 import facebook
+import sys
 
 from django.urls import reverse
 from django.utils.encoding import force_bytes
@@ -12,6 +13,7 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.authentication import TokenAuthentication
+from rest_framework_jwt.settings import api_settings
 
 from core.services import mailer, tokens
 
@@ -39,14 +41,11 @@ class Facebook(APIView):
         if not code:
             return Response(status = 400)
 
-        app_id = getattr(settings, 'FACEBOOK_APP_ID')
-        app_secret = getattr(settings, 'FACEBOOK_APP_SECRET')
-
         params = {
-            'client_id': app_id,
-            'client_secret': app_secret,
             'code': code,
-            'redirect_uri': 'https://localhost:3000/app/auth/facebook',
+            'client_id': getattr(settings, 'FACEBOOK_APP_ID'),
+            'client_secret': getattr(settings, 'FACEBOOK_APP_SECRET'),
+            'redirect_uri': getattr(settings, 'FACEBOOK_REDIRECT_URI'),
         }
 
         r = requests.get('https://graph.facebook.com/v3.1/oauth/access_token', params=params)
@@ -54,23 +53,41 @@ class Facebook(APIView):
 
         if 'error' in data:
             return Response(data["error"], status=422)
-        try:
-            user = User.objects.get(email = "methsg@gmail.com")
-        except User.DoesNotExist:
-            graph = facebook.GraphAPI(access_token=data["access_token"], version="3.0")
-            me = graph.get_object(id="me", fields="email,first_name,last_name")
 
+        graph = facebook.GraphAPI(access_token=data["access_token"], version="3.0")
+        me = graph.get_object(id="me", fields="email,first_name,last_name")
+
+        try:
+            user = User.objects.get(email = me["email"])
+            return Response({
+                'id': user.pk,
+                'email': user.email,
+                'token': generate_jwt_token(user)
+            })
+        except User.DoesNotExist:
             user = User()
             user.email = me["email"]
             user.first_name = me["first_name"]
             user.last_name = me["last_name"]
+            user.is_active = True
 
             user.save()
-            pass
 
-        print(user)
+            result = confirm_user(user)
 
-        return Response("OK")
+            if result:
+                return Response({
+                    'id': user.pk,
+                    'email': user.email,
+                    'token': generate_jwt_token(user)
+                })
+            else:
+                print("result failed")
+                return Response(status=status.HTTP_422_UNPROCESSABLE_ENTITY)
+        except:
+            return Response(status=status.HTTP_422_UNPROCESSABLE_ENTITY)
+
+        return Response(status=status.HTTP_422_UNPROCESSABLE_ENTITY)
 
 
 class Register(APIView):
@@ -131,3 +148,39 @@ class Confirmation(APIView):
             return Response('Thank you for your email confirmation')
         else:
             return Response('Invalid confirmation link', status=status.HTTP_400_BAD_REQUEST)
+
+"""
+confirm_user
+
+helper function for sending a confirmation e-mail to user
+"""
+def confirm_user(user):
+    token = tokens.user_confirmation_token.make_token(user)
+    uid = urlsafe_base64_encode(force_bytes(user.pk)).decode()
+
+    try:
+        mailer.send_confirmation_email(user, {
+            # 'confirmation_url': confirmation_url,
+            'token': token,
+            'uid': uid,
+        })
+
+        return True
+    except:
+        print('Unexpected errors on sending an e-mail', sys.exc_info()[0])
+
+        return False
+
+"""
+generate_jwt_token
+
+helper function for generate jwt token for given user
+"""
+def generate_jwt_token(user):
+    jwt_payload_handler = api_settings.JWT_PAYLOAD_HANDLER
+    jwt_encode_handler = api_settings.JWT_ENCODE_HANDLER
+
+    payload = jwt_payload_handler(user)
+    token = jwt_encode_handler(payload)
+
+    return token

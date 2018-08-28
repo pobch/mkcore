@@ -14,6 +14,14 @@ dev:
 		-e "VAULT_TOKEN=${VAULT_TOKEN}" \
 		makrub/mkcore
 
+manage:
+	sudo docker run \
+		-it \
+		-v ${PWD}:/app \
+		-v ${PWD}/makrub/.env:/etc/app/.env \
+		makrub/mkcore \
+		python manage.py ${MANAGE_CMD}
+
 migrate:
 	sudo docker run \
 		-it \
