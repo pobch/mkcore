@@ -24,9 +24,10 @@ openpyxl = "==2.5.5"
 pylint = "==2.1.1"
 pylint-django = "==2.0.2"
 social-auth-app-django = "==2.1.0"
+facebook-sdk = "*"
 
 [dev-packages]
-pylint = "==2.0.2"
+pylint = "*"
 
 [requires]
 python_version = "3.6"
