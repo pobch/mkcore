@@ -52,7 +52,7 @@ else:
 SECRET_KEY = os.environ.get('SECRET_KEY', '%zmixicnvgn8gn)+ybg&%wx)fzk7oo3t4t#(wl2n*qzbk*vu23')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = bool(os.environ.get('DEBUG', True))
+DEBUG = os.environ.get('DEBUG', False) == 'True'
 
 ALLOWED_HOSTS = os.environ.get('ALLOWED_HOSTS', '127.0.0.1,localhost').split(',')
 
@@ -80,9 +80,9 @@ INSTALLED_APPS = [
 ]
 
 MIDDLEWARE = [
-    'corsheaders.middleware.CorsMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'whitenoise.middleware.WhiteNoiseMiddleware',
+    'corsheaders.middleware.CorsMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -168,9 +168,7 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/2.0/howto/static-files/
 
 STATIC_URL = '/static/'
-
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
-
 
 # tell django to use my custom user model
 AUTH_USER_MODEL = 'core.User'
@@ -231,7 +229,7 @@ JWT_AUTH = {
 # Simplified static file serving.
 # https://warehouse.python.org/project/whitenoise/
 STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
-
+# STATICFILES_STORAGE = 'django.contrib.staticfiles.storage.StaticFilesStorage'
 
 ######### Heroku: Update database configuration from $DATABASE_URL.
 import dj_database_url
@@ -251,3 +249,9 @@ SITE_NAME = os.environ.get('FRONTEND_SITE_NAME', 'Localhost.me')
 
 ######### My custom variable for user activation e-mail content:
 FRONTEND_APP_URL = os.environ.get('FRONTEND_APP_URL')
+
+
+######### Facebook Settings
+FACEBOOK_APP_ID = os.environ.get('FACEBOOK_APP_ID')
+FACEBOOK_APP_SECRET = os.environ.get('FACEBOOK_APP_SECRET')
+FACEBOOK_REDIRECT_URI = os.environ.get('FACEBOOK_REDIRECT_URI')
