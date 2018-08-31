@@ -4,6 +4,9 @@ DEPLOY_HOST = app-1.studiotwist.co
 build:
 	sudo docker build -t makrub/mkcore .
 
+docker-base:
+	sudo docker build -t makrub/mkcore-base -f Dockerfile.base .
+
 dev:
 	sudo docker run \
 		-it \
