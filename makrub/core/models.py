@@ -110,8 +110,9 @@ class Room(models.Model):
     end_at = models.DateTimeField(blank=True, null=True)
     image_url = models.URLField(blank=True, null=False) # this is CharField
     attached_links = JSONField(blank=True, null=False, default=list)
-    status = models.CharField(max_length=10, choices=STATUS_CHOICES, default='draft', null=False, blank=False)
+    social_urls = JSONField(blank=True, null=False, default=dict)
 
+    status = models.CharField(max_length=10, choices=STATUS_CHOICES, default='draft', null=False, blank=False)
     created_at = models.DateTimeField(auto_now_add=True, null=False)
     updated_at = models.DateTimeField(auto_now=True, null=False)
     published_at = models.DateTimeField(null=True, blank=True)

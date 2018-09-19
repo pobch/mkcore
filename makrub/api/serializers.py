@@ -63,7 +63,7 @@ class UserSerializer(serializers.ModelSerializer):
         read_only_fields = ('last_login', 'is_active',)
         extra_kwargs = {
             'password': {'write_only': True}, # hide password field when GET request
-            }
+        }
 
     def validate(self, data):
         super().validate(data)
