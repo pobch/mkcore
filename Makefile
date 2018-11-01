@@ -1,33 +1,42 @@
 DEPLOY_HOST = app-1.studiotwist.co
 
+.PHONY:
+build:
+	sudo docker build -t makrub/mkcore .
+
+docker-base:
+	sudo docker build -t makrub/mkcore-base -f Dockerfile.base .
+
 dev:
 	sudo docker run \
 		-it \
 		-p 8000:8000 \
 		-v ${PWD}:/app \
-		mkcore \
-		/usr/local/bin/uwsgi --http :8000 --chdir /app/makrub --wsgi-file /app/makrub/config/wsgi.py --py-autoreload 1
+		-v ${PWD}/makrub/.env:/etc/app/.env \
+		-e "APP_ENV=local" \
+		-e "VAULT_TOKEN=${VAULT_TOKEN}" \
+		makrub/mkcore
 
-.PHONY:
-build:
-	sudo docker build -t mkcore .
+manage:
+	sudo docker run \
+		-it \
+		-v ${PWD}:/app \
+		-v ${PWD}/makrub/.env:/etc/app/.env \
+		makrub/mkcore \
+		python manage.py ${MANAGE_CMD}
 
 migrate:
 	sudo docker run \
 		-it \
 		-v ${PWD}:/app \
-		mkcore \
-		python makrub/manage.py migrate
+		-v ${PWD}/makrub/.env:/etc/app/.env \
+		makrub/mkcore \
+		python manage.py migrate
 
 createsuperuser:
 	sudo docker run \
 		-it \
 		-v ${PWD}:/app \
-		mkcore \
-		python makrub/manage.py createsuperuser
-
-start:
-	gunicron --chdir /app/mkcore-prod makrub.wsgi.application
-
-deploy:
-	rsync -avz -e "ssh -o StrictHostKeyChecking=no" ./ ubuntu@${DEPLOY_HOST}:/app/ktapi-$(env)/
+		-v ${PWD}/makrub/.env:/etc/app/.env \
+		makrub/mkcore \
+		python manage.py createsuperuser
