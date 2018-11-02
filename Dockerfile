@@ -1,10 +1,15 @@
-FROM makrub/mkcore-base
+FROM python:3.6-alpine as base
 MAINTAINER Metz Charusasi "metz@studiotwist.co"
 
-RUN apk add --no-cache --virtual .build-deps \
-        build-base postgresql-dev libffi-dev linux-headers
+WORKDIR /app
+ADD Pipfile /app
+ADD Pipfile.lock /app
 
-RUN find /usr/local \
+RUN apk add --no-cache --virtual .build-deps \
+  build-base postgresql-dev libffi-dev linux-headers \
+    && pip install uwsgi pipenv \
+    && pipenv install --system \
+    && find /usr/local \
         \( -type d -a -name test -o -name tests \) \
         -o \( -type f -a -name '*.pyc' -o -name '*.pyo' \) \
         -exec rm -rf '{}' + \
@@ -18,9 +23,6 @@ RUN find /usr/local \
     && apk add --virtual .rundeps $runDeps \
     && apk del build-base && rm -rf /var/cache/apk/*
 
-ADD . /app
-WORKDIR /app/makrub
-RUN pip install -r /app/requirements.txt
-
 EXPOSE 8000
-CMD ["/app/start.sh"]
+# CMD ["python", "makrub/manage.py", "runserver", "0.0.0.0:8000"]
+CMD ["/usr/local/bin/uwsgi", "--http", ":8000", "--wsgi-file", "/app/makrub/config/wsgi.py", "--py-autoreload", "1"]

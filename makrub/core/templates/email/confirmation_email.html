@@ -1,11 +1,6 @@
 {% autoescape off %}
-<div>
-  <h4>Thank you for registration with us!</h4>
-</div>
-<p>
-  Please confirm your email by clickling the link below:
-</p>
-<p>
-  <a href="{{ confirmation_url }}">Confirm and activate your account</a>
-</p>
+Thank you for registration with us!
+
+Please confirm your email by clickling the link below:
+{{ confirmation_url }}
 {% endautoescape %}

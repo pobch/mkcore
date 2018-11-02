@@ -1,34 +1,24 @@
-image: docker:dind
+image: python:alpine3.6
 
 stages:
-  - build
-  - deploy
+ - deploy
 
-variables:
-  DOCKER_DRIVER: overlay
-
-.job_template: &job_definition
-  services:
-    - docker:dind
-  tags:
-    - docker
-  before_script:
-    - export IMAGE_TAG=$(if [ ! -z "$CI_COMMIT_TAG" ]; then echo "$CI_COMMIT_TAG"; else echo "$CI_COMMIT_REF_NAME"; fi)
-    - export IMAGE_TAG=$(if [ "$IMAGE_TAG" == "master" ]; then echo "latest"; else echo "$CI_COMMIT_REF_NAME"; fi)
-    - export APP_IMAGE="$CI_REGISTRY_IMAGE:$IMAGE_TAG"
-
-build_image:
-  <<: *job_definition
-  stage: build
-  script:
-    - docker login -u gitlab-ci-token -p $CI_JOB_TOKEN $CI_REGISTRY
-    - docker build -t $APP_IMAGE .
-    - docker push $CI_REGISTRY_IMAGE:$IMAGE_TAG
-
-deploy:
+deploy_prod:
   stage: deploy
+  environment:
+    name: production
+    url: https://www.makrub.com
+
+  before_script:
+    - apk add --update rsync openssh-client make
+    - eval $(ssh-agent -s)
+    - echo "$APP_1_PRIVATE_KEY" | ssh-add -
+    - mkdir -p ~/.ssh
+    - echo "$APP_1_HOSTKEYS" > ~/.ssh/known_hosts
+
   script:
-    - apk --no-cache add curl
-    - "curl -X POST -F token=$DEPLOY_TOKEN -F ref=develop https://gitlab.studiotwist.co/api/v4/projects/47/trigger/pipeline"
+    - make deploy env=prod
+
+  when: manual
   only:
-    - develop
+    - master
