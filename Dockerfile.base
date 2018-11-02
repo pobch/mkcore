@@ -1,9 +1,10 @@
-FROM makrub/mkcore-base
+FROM python:3.6-alpine as base
 MAINTAINER Metz Charusasi "metz@studiotwist.co"
 
 RUN apk add --no-cache --virtual .build-deps \
         build-base postgresql-dev libffi-dev linux-headers
 
+RUN pip install uwsgi numpy==1.15.1 pandas==0.23.4
 RUN find /usr/local \
         \( -type d -a -name test -o -name tests \) \
         -o \( -type f -a -name '*.pyc' -o -name '*.pyo' \) \
@@ -18,9 +19,4 @@ RUN find /usr/local \
     && apk add --virtual .rundeps $runDeps \
     && apk del build-base && rm -rf /var/cache/apk/*
 
-ADD . /app
-WORKDIR /app/makrub
-RUN pip install -r /app/requirements.txt
-
-EXPOSE 8000
-CMD ["/app/start.sh"]
+RUN addgroup -S uwsgi && adduser -S -G uwsgi uwsgi

@@ -50,13 +50,14 @@ coverage.xml
 docs/_build/
 
 # Note
-/Note*
+Note.py
 
 # otp
 otp/
 
 # Secret
 .env
+.env*
 .vscode
 
 # Text backup files
@@ -64,3 +65,8 @@ otp/
 
 #Database
 *.sqlite3
+
+# deployment
+/generated
+/config
+/makrub/staticfiles
