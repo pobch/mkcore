@@ -202,6 +202,7 @@ CORS_ORIGIN_WHITELIST = (
     'dev.makrub.com',
     'dev-app.makrub.com',
     'mkcore-app.herokuapp.com',
+    'makrub.netlify.com',
 )
 
 
